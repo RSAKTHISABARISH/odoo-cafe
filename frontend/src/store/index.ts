@@ -8,11 +8,6 @@ import type {
   Order, OrderLine, Payment, KDSTicket, Coupon,
   AuditLog, AppSettings, AuthState, DashboardMetrics, EmployeeRole,
 } from '../types';
-import {
-  seedFloors, seedTables, seedCategories, seedProducts,
-  seedCustomers, seedEmployees, seedCoupons,
-  generateSeedOrders, generateSeedKDSTickets, generateSeedPayments,
-} from '../data/seed';
 import { api } from '../utils/api';
 
 // ── Auth Store ──────────────────────────────────────────────
@@ -52,7 +47,7 @@ export const useSettingsStore = create<SettingsStore>()(
   persist(
     (set, get) => ({
       settings: {
-        restaurantName: 'Café Totaram',
+        restaurantName: 'Velora Café',
         currency: 'INR',
         currencySymbol: '₹',
         taxRate: 5,
@@ -85,8 +80,8 @@ interface ProductStore {
 export const useProductStore = create<ProductStore>()(
   persist(
     (set, get) => ({
-      categories: seedCategories,
-      products: seedProducts,
+      categories: [],
+      products: [],
       addCategory: async (c) => {
         set({ categories: [...get().categories, c] });
         try { await api.createCategory(c); } catch (e) { console.error(e); }
@@ -138,8 +133,8 @@ interface TableStore {
 export const useTableStore = create<TableStore>()(
   persist(
     (set, get) => ({
-      floors: seedFloors,
-      tables: seedTables,
+      floors: [],
+      tables: [],
       addFloor: async (f) => {
         set({ floors: [...get().floors, f] });
         try { await api.createFloor(f); } catch (e) { console.error(e); }
@@ -183,7 +178,7 @@ interface CustomerStore {
 export const useCustomerStore = create<CustomerStore>()(
   persist(
     (set, get) => ({
-      customers: seedCustomers,
+      customers: [],
       addCustomer: async (c) => {
         set({ customers: [...get().customers, c] });
         try { await api.createCustomer(c); } catch (e) { console.error(e); }
@@ -215,7 +210,7 @@ interface EmployeeStore {
 export const useEmployeeStore = create<EmployeeStore>()(
   persist(
     (set, get) => ({
-      employees: seedEmployees,
+      employees: [],
       addEmployee: async (e) => {
         set({ employees: [...get().employees, e] });
         try { await api.createEmployee(e); } catch (e) { console.error(e); }
@@ -237,7 +232,7 @@ export const useEmployeeStore = create<EmployeeStore>()(
 );
 
 // ── Order Store ─────────────────────────────────────────────
-const initialOrders = generateSeedOrders();
+const initialOrders: Order[] = [];
 
 interface OrderStore {
   orders: Order[];
@@ -340,7 +335,7 @@ interface PaymentStore {
   getPaymentsByOrder: (orderId: string) => Payment[];
 }
 
-const initialPayments = generateSeedPayments(initialOrders);
+const initialPayments: Payment[] = [];
 
 export const usePaymentStore = create<PaymentStore>()(
   persist(
@@ -367,7 +362,7 @@ interface KDSStore {
 export const useKDSStore = create<KDSStore>()(
   persist(
     (set, get) => ({
-      tickets: generateSeedKDSTickets(initialOrders),
+      tickets: [],
       addTicket: async (t) => {
         set({ tickets: [t, ...get().tickets] });
         try { await api.createKDSTicket(t); } catch (e) { console.error(e); }
@@ -419,7 +414,7 @@ interface CouponStore {
 export const useCouponStore = create<CouponStore>()(
   persist(
     (set, get) => ({
-      coupons: seedCoupons,
+      coupons: [],
       addCoupon: async (c) => {
         set({ coupons: [...get().coupons, c] });
         try { await api.createCoupon(c); } catch (e) { console.error(e); }
@@ -567,7 +562,7 @@ export function computeDashboardMetrics(
   const catMap: Record<string, number> = {};
   const productMap = new Map(products.map(p => [p.id, p]));
   const catNames = new Map<string, string>();
-  seedCategories.forEach(c => catNames.set(c.id, c.name));
+  useProductStore.getState().categories.forEach(c => catNames.set(c.id, c.name));
   orders.filter(o => o.status === 'paid').forEach(o => {
     o.lines.forEach(l => {
       const prod = productMap.get(l.productId);

@@ -1,4 +1,4 @@
-# Café Totaram — Smart Restaurant Management System
+# Velora Café — Smart Restaurant Management System
 
 A full-stack restaurant POS system with a React frontend and Python FastAPI backend connected to a local database.
 

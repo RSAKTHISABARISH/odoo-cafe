@@ -3,7 +3,8 @@
 // ============================================================
 import { useState } from 'react';
 import { useSettingsStore, useAuditStore } from '../store';
-import { Settings as SettingsIcon, Save, Store, Receipt, Palette, ShieldAlert } from 'lucide-react';
+import { Settings as SettingsIcon, Save, Store, Receipt, Palette, ShieldAlert, Database } from 'lucide-react';
+import { api } from '../utils/api';
 
 export default function Settings() {
   const { settings, updateSettings } = useSettingsStore();
@@ -14,6 +15,18 @@ export default function Settings() {
   const handleSave = () => {
     updateSettings(formData);
     alert('Settings saved successfully!');
+  };
+
+  const handleSeedDatabase = async () => {
+    if (!window.confirm("Are you sure you want to seed the database with default data?")) return;
+    try {
+      await api.seedDatabase();
+      alert("Database seeded successfully! Please reload the page to fetch the new data.");
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to seed the database.");
+    }
   };
 
   return (
@@ -76,6 +89,14 @@ export default function Settings() {
                     onChange={(e) => setFormData({ ...formData, currencySymbol: e.target.value })}
                   />
                 </div>
+              </div>
+
+              <div className="mt-8 pt-6 border-t border-surface-200 dark:border-surface-700">
+                <h3 className="text-lg font-bold font-display text-surface-900 mb-2">Database Management</h3>
+                <p className="text-surface-500 text-sm mb-4">Initialize your database with default categories, products, and tables.</p>
+                <button onClick={handleSeedDatabase} className="btn-secondary flex items-center gap-2">
+                  <Database className="w-4 h-4" /> Seed Default Data
+                </button>
               </div>
             </div>
           )}

@@ -82,6 +82,18 @@ export const api = {
   getPayments: () => request<any[]>('/payments'),
   createPayment: (payment: any) => request<any>('/payments', { method: 'POST', body: JSON.stringify(payment) }),
 
+  // ── Razorpay ──────────────────────────────────────────────
+  createRazorpayOrder: (amount: number, receipt?: string) =>
+    request<{ id: string; amount: number; currency: string; key_id: string }>(
+      '/razorpay/create-order',
+      { method: 'POST', body: JSON.stringify({ amount, receipt }) }
+    ),
+  verifyRazorpayPayment: (data: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) =>
+    request<{ verified: boolean; payment_id: string }>(
+      '/razorpay/verify-payment',
+      { method: 'POST', body: JSON.stringify(data) }
+    ),
+
   // ── KDS Tickets ───────────────────────────────────────────
   getKDSTickets: () => request<any[]>('/kds-tickets'),
   createKDSTicket: (ticket: any) => request<any>('/kds-tickets', { method: 'POST', body: JSON.stringify(ticket) }),
@@ -102,4 +114,6 @@ export const api = {
 
   // ── Audit Logs ────────────────────────────────────────────
   createAuditLog: (log: any) => request<any>('/audit-logs', { method: 'POST', body: JSON.stringify(log) }),
+
+  seedDatabase: () => request<{ message: string }>('/seed', { method: 'POST' }),
 };

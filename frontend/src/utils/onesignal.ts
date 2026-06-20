@@ -1,6 +1,6 @@
 // ============================================================
 // OneSignal Email Notification Service
-// Café Totaram POS — REST API wrapper (browser-compatible)
+// Velora Café POS — REST API wrapper (browser-compatible)
 // ============================================================
 
 // ⚠️  In production, move the REST API key to a backend/proxy
@@ -126,7 +126,7 @@ function buildReservationEmailBody(data: ReservationEmailData): string {
                 <tr>
                   <td width="33%" style="text-align:center;">
                     <div style="font-size:18px;">📍</div>
-                    <div style="font-size:12px;color:#6b7280;margin-top:4px;">Near Bus Stand,<br/>Totaram Nagar</div>
+                    <div style="font-size:12px;color:#6b7280;margin-top:4px;">Near Bus Stand,<br/>Velora Nagar</div>
                   </td>
                   <td width="33%" style="text-align:center;border-left:1px solid #e5e7eb;border-right:1px solid #e5e7eb;">
                     <div style="font-size:18px;">🕐</div>

@@ -1,5 +1,5 @@
 // ============================================================
-// Café Totaram — Dashboard (Red & Orange Theme)
+// Velora Café — Dashboard (Red & Orange Theme)
 // ============================================================
 import { useOrderStore, useProductStore, useTableStore, useSettingsStore, useEmployeeStore } from '../store';
 import { useMemo } from 'react';

@@ -57,12 +57,12 @@ export default function Layout() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{ background: 'linear-gradient(135deg, #FFF8F5 0%, #FFF0EA 100%)' }}>
+    <div className="flex h-screen overflow-hidden" style={{ background: 'transparent' }}>
 
       {/* ── Sidebar ─────────────────────────────────────────── */}
       <aside className={`fixed inset-y-0 left-0 z-50 w-60 flex flex-col transform transition-transform duration-300 ease-in-out ${
         isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:relative lg:translate-x-0 bg-white border-r border-red-100 shadow-solid`}>
+      } lg:relative lg:translate-x-0 bg-white/80 backdrop-blur-md border-r border-red-100 shadow-solid`}>
 
         {/* Logo */}
         <div className="p-4 border-b border-red-100 bg-gradient-to-r from-red-50 to-orange-50">
@@ -126,7 +126,7 @@ export default function Layout() {
       <div className="flex-1 flex flex-col min-w-0">
 
         {/* Top bar */}
-        <header className="h-14 bg-white border-b border-red-100 flex items-center justify-between px-4 sm:px-6 shrink-0 z-30 shadow-header">
+        <header className="h-14 bg-white/80 backdrop-blur-md border-b border-red-100 flex items-center justify-between px-4 sm:px-6 shrink-0 z-30 shadow-header">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setIsSidebarOpen(true)}

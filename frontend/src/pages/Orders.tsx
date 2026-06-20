@@ -1,5 +1,5 @@
 // ============================================================
-// Café Totaram — Orders Management (Café Theme + QR per Order)
+// Velora Café — Orders Management (Café Theme + QR per Order)
 // ============================================================
 import { useState, useMemo } from 'react';
 import { useOrderStore, useSettingsStore } from '../store';

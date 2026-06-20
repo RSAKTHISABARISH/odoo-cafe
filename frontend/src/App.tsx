@@ -1,5 +1,5 @@
 // ============================================================
-// Café Totaram — App Router (Updated with Landing Page)
+// Velora Café — App Router (Updated with Landing Page)
 // ============================================================
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -21,6 +21,7 @@ import Reports from './pages/Reports';
 import SelfOrder from './pages/SelfOrder';
 import Settings from './pages/Settings';
 import Reservation from './pages/Reservation';
+import Cashier from './pages/Cashier';
 
 function ProtectedRoute({ children, allowedRoles }: { children: React.ReactNode; allowedRoles?: string[] }) {
   const { isAuthenticated, role } = useAuthStore();
@@ -80,6 +81,7 @@ export default function App() {
           <Route path="coupons" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><Coupons /></ProtectedRoute>} />
           <Route path="reports" element={<ProtectedRoute allowedRoles={['admin', 'manager']}><Reports /></ProtectedRoute>} />
           <Route path="settings" element={<ProtectedRoute allowedRoles={['admin']}><Settings /></ProtectedRoute>} />
+          <Route path="cashier" element={<ProtectedRoute allowedRoles={['admin', 'manager', 'cashier']}><Cashier /></ProtectedRoute>} />
         </Route>
 
         {/* Legacy redirects */}

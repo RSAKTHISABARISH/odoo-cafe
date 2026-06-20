@@ -34,6 +34,7 @@ export default function Login() {
       login(employee);
       if (employee.role === 'kitchen') navigate('/app/kitchen');
       else if (employee.role === 'waiter') navigate('/app/tables');
+      else if (employee.role === 'cashier') navigate('/app/cashier');
       else navigate('/app/dashboard');
     } catch {
       // Fallback to local store
@@ -42,6 +43,7 @@ export default function Login() {
         login(local);
         if (local.role === 'kitchen') navigate('/app/kitchen');
         else if (local.role === 'waiter') navigate('/app/tables');
+        else if (local.role === 'cashier') navigate('/app/cashier');
         else navigate('/app/dashboard');
       } else {
         setError('Invalid username or password. Please try again.');
@@ -61,7 +63,7 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: 'linear-gradient(135deg, #FFF8F5 0%, #FFF0EA 50%, #FFE8DC 100%)' }}>
+    <div className="min-h-screen flex flex-col relative overflow-hidden" style={{ background: 'transparent' }}>
 
 
       {/* Background blobs */}
@@ -74,6 +76,9 @@ export default function Login() {
       {/* Top bar */}
       <header className="relative z-10 px-6 py-4 flex items-center justify-between border-b border-red-100 bg-white/70 backdrop-blur-sm">
         <div className="flex items-center gap-3">
+          <button onClick={() => navigate('/')} className="p-2 hover:bg-red-50 rounded-xl transition-colors text-surface-400 hover:text-surface-900">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
           <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-accent-500 rounded-xl flex items-center justify-center shadow-solid">
             <span className="text-lg">🔥</span>
           </div>
@@ -284,20 +289,27 @@ export default function Login() {
 
               {/* Quick Access */}
               <div className="mt-8 pt-6 border-t border-red-100">
-                <p className="text-center text-surface-400 text-xs uppercase tracking-wider mb-4">Demo Access</p>
-                <div className="grid grid-cols-2 gap-2">
+                <p className="text-center text-surface-400 text-xs uppercase tracking-wider mb-4">Quick Demo Access</p>
+                <div className="grid grid-cols-1 gap-2">
                   {[
-                    { label: '🔴 Admin',   user: 'admin', color: 'border-red-200 text-red-600 hover:bg-red-50 hover:border-red-400' },
-                    { label: '🟠 Manager', user: 'sneha', color: 'border-orange-200 text-orange-600 hover:bg-orange-50 hover:border-orange-400' },
-                    { label: '🟡 Waiter',  user: 'rohan', color: 'border-amber-200 text-amber-600 hover:bg-amber-50 hover:border-amber-400' },
-                    { label: '🍳 Kitchen', user: 'rajan', color: 'border-rose-200 text-rose-600 hover:bg-rose-50 hover:border-rose-400' },
+                    { label: '🔴 Admin',   user: 'admin', pass: 'password', route: '/app/dashboard', color: 'border-red-200 text-red-700 hover:bg-red-50 hover:border-red-400' },
+                    { label: '🍳 Kitchen', user: 'rajan', pass: 'password', route: '/app/kitchen',   color: 'border-orange-200 text-orange-700 hover:bg-orange-50 hover:border-orange-400' },
+                    { label: '💳 Cashier', user: 'admin', pass: 'password', route: '/app/cashier',   color: 'border-amber-200 text-amber-700 hover:bg-amber-50 hover:border-amber-400' },
                   ].map(d => (
                     <button
                       key={d.label}
-                      onClick={() => handleQuickLogin(d.user, 'password')}
-                      className={`py-2 px-3 rounded-xl border-2 text-xs font-bold transition-all ${d.color}`}
+                      onClick={() => {
+                        setUsername(d.user);
+                        setPassword(d.pass);
+                        // Navigate directly with admin credentials for demo
+                        const emp = employees.find(e => e.username === d.user && e.active);
+                        if (emp) { login(emp); navigate(d.route); }
+                        else handleQuickLogin(d.user, d.pass);
+                      }}
+                      className={`py-3 px-4 rounded-xl border-2 text-sm font-bold transition-all flex items-center justify-between ${d.color}`}
                     >
-                      {d.label}
+                      <span>{d.label}</span>
+                      <ChevronRight className="w-4 h-4" />
                     </button>
                   ))}
                 </div>

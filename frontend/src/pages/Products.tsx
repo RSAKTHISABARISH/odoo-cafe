@@ -1,12 +1,159 @@
 // ============================================================
-// CaféFlow POS — Products & Categories Management (Red/Orange Theme)
+// Velora Café — Products & Categories Management
+// Shows the 10 official café menu items with real photos
 // ============================================================
 import { useState } from 'react';
 import { useProductStore, useSettingsStore } from '../store';
-import { Search, Plus, Edit2, Trash2, Package, Tag, X } from 'lucide-react';
+import { Search, Plus, Edit2, Trash2, Package, Tag, X, Star, Flame, Clock } from 'lucide-react';
 import type { Product, Category } from '../types';
 
-const EMOJI_OPTIONS = ['☕', '🍵', '🧋', '🥤', '🍺', '🍷', '🧃', '🍹', '🥛', '🍫', '🍕', '🍔', '🍟', '🌮', '🌯', '🥗', '🍜', '🍣', '🍩', '🎂', '🍰', '🧁', '🍪', '🍦'];
+// ── Official Velora Café Menu ────────────────────────────────
+const OFFICIAL_MENU = [
+  {
+    id: 'off-espresso',
+    name: 'Espresso',
+    price: 120,
+    taxRate: 10,
+    category: 'Hot Drinks',
+    catId: 'cat-hotdrink',
+    image: 'https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=700&q=85',
+    description: 'Rich, bold single-origin espresso with a smooth golden crema. The perfect pick-me-up.',
+    badge: 'Bestseller',
+    prepTime: 3,
+    tags: ['hot', 'bestseller', 'caffeine'],
+  },
+  {
+    id: 'off-cappuccino',
+    name: 'Cappuccino',
+    price: 150,
+    taxRate: 6,
+    category: 'Hot Drinks',
+    catId: 'cat-hotdrink',
+    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=700&q=85',
+    description: 'Espresso crowned with velvety steamed milk and a thick layer of dense, creamy foam.',
+    badge: 'Popular',
+    prepTime: 4,
+    tags: ['hot', 'popular', 'milk'],
+  },
+  {
+    id: 'off-latte',
+    name: 'Latte',
+    price: 160,
+    taxRate: 5,
+    category: 'Hot Drinks',
+    catId: 'cat-hotdrink',
+    image: 'https://images.unsplash.com/photo-1561047029-3000c68339ca?auto=format&fit=crop&w=700&q=85',
+    description: 'Silky espresso layered with steamed milk and delicate latte art on top.',
+    badge: null,
+    prepTime: 4,
+    tags: ['hot', 'milk', 'smooth'],
+  },
+  {
+    id: 'off-tea',
+    name: 'Tea',
+    price: 80,
+    taxRate: 7,
+    category: 'Hot Drinks',
+    catId: 'cat-hotdrink',
+    image: 'https://images.unsplash.com/photo-1556679343-c7306c1976bc?auto=format&fit=crop&w=700&q=85',
+    description: 'Premium whole-leaf tea steeped to perfection, served piping hot with warmth and character.',
+    badge: null,
+    prepTime: 5,
+    tags: ['hot', 'herbal', 'light'],
+  },
+  {
+    id: 'off-cold-coffee',
+    name: 'Cold Coffee',
+    price: 180,
+    taxRate: 5,
+    category: 'Cold Drinks',
+    catId: 'cat-colddrink',
+    image: 'https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=700&q=85',
+    description: '16-hour cold-steeped coffee poured over ice — naturally sweet, smooth and refreshing.',
+    badge: 'Bestseller',
+    prepTime: 2,
+    tags: ['cold', 'bestseller', 'iced'],
+  },
+  {
+    id: 'off-juice',
+    name: 'Juice & Smoothies',
+    price: 170,
+    taxRate: 3,
+    category: 'Cold Drinks',
+    catId: 'cat-colddrink',
+    image: 'https://images.unsplash.com/photo-1610970881699-44a5587cabec?auto=format&fit=crop&w=700&q=85',
+    description: 'Freshly blended seasonal fruits and vegetables, no added sugar or preservatives. Pure goodness.',
+    badge: 'New',
+    prepTime: 5,
+    tags: ['cold', 'healthy', 'fresh'],
+  },
+  {
+    id: 'off-sandwich',
+    name: 'Sandwich',
+    price: 150,
+    taxRate: 9,
+    category: 'Food',
+    catId: 'cat-food',
+    image: 'https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=700&q=85',
+    description: 'Grilled sourdough loaded with premium fillings, fresh herbs, and our signature house sauce.',
+    badge: 'Popular',
+    prepTime: 8,
+    tags: ['food', 'grilled', 'popular'],
+  },
+  {
+    id: 'off-burger',
+    name: 'Burger',
+    price: 200,
+    taxRate: 5,
+    category: 'Food',
+    catId: 'cat-food',
+    image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=700&q=85',
+    description: 'Juicy patty with fresh lettuce, ripe tomato, aged cheese and our special secret sauce.',
+    badge: 'Bestseller',
+    prepTime: 12,
+    tags: ['food', 'bestseller', 'hearty'],
+  },
+  {
+    id: 'off-pizza',
+    name: 'Pizza',
+    price: 250,
+    taxRate: 5,
+    category: 'Food',
+    catId: 'cat-food',
+    image: 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=700&q=85',
+    description: 'Stone-baked thin crust topped with hand-crushed tomato, fresh mozzarella and basil.',
+    badge: null,
+    prepTime: 18,
+    tags: ['food', 'stone-baked', 'sharing'],
+  },
+  {
+    id: 'off-pastries',
+    name: 'Pastries & Cakes',
+    price: 140,
+    taxRate: 2,
+    category: 'Pastries & Cakes',
+    catId: 'cat-bakes',
+    image: 'https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=700&q=85',
+    description: 'Freshly baked daily — buttery croissants, muffins, and our signature celebration cakes.',
+    badge: 'Popular',
+    prepTime: 2,
+    tags: ['baked', 'sweet', 'daily fresh'],
+  },
+];
+
+const BADGE_STYLES: Record<string, { bg: string; color: string; icon: string }> = {
+  'Bestseller': { bg: '#C4862A', color: '#fff', icon: '⭐' },
+  'Popular':    { bg: '#6B3A2A', color: '#fff', icon: '🔥' },
+  'New':        { bg: '#16A34A', color: '#fff', icon: '✦' },
+};
+
+const CATEGORIES = [
+  { id: 'all',            label: 'All Items',       icon: '🍽️' },
+  { id: 'cat-hotdrink',  label: 'Hot Drinks',       icon: '☕' },
+  { id: 'cat-colddrink', label: 'Cold Drinks',       icon: '🥤' },
+  { id: 'cat-food',      label: 'Food',              icon: '🍔' },
+  { id: 'cat-bakes',     label: 'Pastries & Cakes',  icon: '🥐' },
+];
 
 export default function Products() {
   const { products, categories, addProduct, updateProduct, deleteProduct, addCategory, deleteCategory } = useProductStore();
@@ -18,50 +165,16 @@ export default function Products() {
   const [isAddingProduct, setIsAddingProduct] = useState(false);
   const [isAddingCategory, setIsAddingCategory] = useState(false);
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-
-  const filteredProducts = products.filter(p => {
-    if (selectedCategory !== 'all' && p.categoryId !== selectedCategory) return false;
-    if (searchTerm && !p.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
-    return true;
-  });
-
-  const handleSaveProduct = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    const tagsStr = formData.get('tags') as string;
-    const productData: Partial<Product> = {
-      name: formData.get('name') as string,
-      categoryId: formData.get('categoryId') as string,
-      price: Number(formData.get('price')),
-      image: formData.get('image') as string,
-      description: formData.get('description') as string,
-      available: formData.get('available') === 'on',
-      tags: tagsStr ? tagsStr.split(',').map(t => t.trim()).filter(Boolean) : [],
-      preparationTime: Number(formData.get('preparationTime')) || 10,
-    };
-    if (isEditingProduct) {
-      updateProduct(isEditingProduct.id, productData);
-      setIsEditingProduct(null);
-    } else {
-      addProduct({ ...productData as Product, id: 'prod-' + Date.now() });
-      setIsAddingProduct(false);
-    }
-  };
-
-  const handleSaveCategory = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    addCategory({
-      id: 'cat-' + Date.now(),
-      name: formData.get('name') as string,
-      icon: formData.get('icon') as string || '☕',
-      color: formData.get('color') as string || '#ef4444',
-      active: true,
-    });
-    setIsAddingCategory(false);
-  };
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
 
   const sym = settings.currencySymbol;
+
+  // Filter from official menu
+  const filtered = OFFICIAL_MENU.filter(item => {
+    const catMatch = selectedCategory === 'all' || item.catId === selectedCategory;
+    const searchMatch = !searchTerm || item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return catMatch && searchMatch;
+  });
 
   const inputCls = 'w-full px-3 py-2.5 bg-white border-2 border-red-100 rounded-xl text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-primary-500 transition-colors';
 
@@ -71,282 +184,270 @@ export default function Products() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Product Management</h1>
-          <p className="text-gray-500 text-sm mt-1">{products.length} products across {categories.length} categories</p>
+          <h1 className="text-2xl font-bold text-gray-900">Menu Items</h1>
+          <p className="text-gray-500 text-sm mt-1">{OFFICIAL_MENU.length} items across 4 categories • Velora Café Official Menu</p>
         </div>
         <button
-          onClick={() => activeTab === 'products' ? setIsAddingProduct(true) : setIsAddingCategory(true)}
+          onClick={() => setIsAddingProduct(true)}
           className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white rounded-xl font-semibold transition-all shadow-solid hover:shadow-solid-hover text-sm"
         >
           <Plus size={18} />
-          Add {activeTab === 'products' ? 'Product' : 'Category'}
+          Add Item
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1 bg-red-50 border border-red-100 p-1 rounded-xl w-fit">
-        {(['products', 'categories'] as const).map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-5 py-2 rounded-lg text-sm font-semibold capitalize transition-all ${
-              activeTab === tab
-                ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white shadow-solid'
-                : 'text-gray-500 hover:text-gray-800'
-            }`}
-          >
-            {tab === 'products'
-              ? <span className="flex items-center gap-2"><Package size={15}/>{tab}</span>
-              : <span className="flex items-center gap-2"><Tag size={15}/>{tab}</span>}
-          </button>
-        ))}
+      {/* Search + Category Filter */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative sm:w-72">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Search menu items..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="w-full pl-9 pr-4 py-2.5 bg-white border-2 border-red-100 rounded-xl text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-primary-500 transition-colors"
+          />
+        </div>
+        <div className="flex gap-2 flex-wrap">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all border-2 ${
+                selectedCategory === cat.id
+                  ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white border-transparent shadow-solid'
+                  : 'bg-white text-gray-600 border-red-100 hover:border-primary-300 hover:text-gray-900'
+              }`}
+            >
+              <span>{cat.icon}</span>
+              <span>{cat.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
-      {activeTab === 'products' && (
-        <>
-          {/* Filters */}
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={e => setSearchTerm(e.target.value)}
-                className="w-full pl-9 pr-4 py-2.5 bg-white border-2 border-red-100 rounded-xl text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:border-primary-500 transition-colors"
-              />
-            </div>
-            <div className="flex gap-2 flex-wrap">
-              <button
-                onClick={() => setSelectedCategory('all')}
-                className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border-2 ${
-                  selectedCategory === 'all'
-                    ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white border-transparent shadow-solid'
-                    : 'bg-white text-gray-600 border-red-100 hover:border-primary-300 hover:text-gray-900'
-                }`}
-              >
-                All
-              </button>
-              {categories.map(cat => (
-                <button
-                  key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
-                  className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all border-2 ${
-                    selectedCategory === cat.id
-                      ? 'bg-gradient-to-r from-primary-500 to-accent-500 text-white border-transparent shadow-solid'
-                      : 'bg-white text-gray-600 border-red-100 hover:border-primary-300 hover:text-gray-900'
-                  }`}
-                >
-                  {cat.icon} {cat.name}
-                </button>
-              ))}
-            </div>
-          </div>
+      {/* ── MENU GRID ────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {filtered.map(item => {
+          const isHovered = hoveredId === item.id;
+          const badge = item.badge ? BADGE_STYLES[item.badge] : null;
+          return (
+            <div
+              key={item.id}
+              onMouseEnter={() => setHoveredId(item.id)}
+              onMouseLeave={() => setHoveredId(null)}
+              style={{
+                background: '#FFFFFF',
+                borderRadius: 20,
+                overflow: 'hidden',
+                border: `1.5px solid ${isHovered ? '#6B3A2A' : '#EDE3D6'}`,
+                boxShadow: isHovered ? '0 12px 40px rgba(107,58,42,0.18)' : '0 3px 12px rgba(107,58,42,0.08)',
+                transition: 'all 0.28s ease',
+                display: 'flex',
+                flexDirection: 'column',
+                transform: isHovered ? 'translateY(-4px)' : 'translateY(0)',
+              }}
+            >
+              {/* ── Photo ───────────────────────────────────── */}
+              <div style={{ position: 'relative', height: 230, overflow: 'hidden', flexShrink: 0 }}>
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  loading="lazy"
+                  style={{
+                    width: '100%', height: '100%', objectFit: 'cover',
+                    transition: 'transform 0.5s ease',
+                    transform: isHovered ? 'scale(1.06)' : 'scale(1)',
+                  }}
+                />
+                {/* Bottom gradient */}
+                <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: 90, background: 'linear-gradient(to top, rgba(26,15,0,0.7), transparent)' }} />
 
-          {/* Product Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredProducts.map(product => {
-              const cat = categories.find(c => c.id === product.categoryId);
-              return (
-                <div
-                  key={product.id}
-                  className="bg-white border-2 border-red-100 hover:border-primary-300 rounded-2xl overflow-hidden transition-all group hover:shadow-solid"
-                >
-                  {/* Image area */}
-                  <div className="relative h-36 bg-gradient-to-br from-red-50 to-orange-50 flex items-center justify-center text-5xl">
-                    {product.image || '🍽️'}
-                    <div className={`absolute top-2 right-2 w-2.5 h-2.5 rounded-full ${product.available ? 'bg-green-500' : 'bg-red-400'}`} />
-                    {!product.available && (
-                      <div className="absolute inset-0 bg-white/50 flex items-center justify-center">
-                        <span className="text-xs font-bold text-red-500 bg-red-50 border border-red-200 px-2 py-1 rounded-full">Unavailable</span>
-                      </div>
-                    )}
+                {/* Badge */}
+                {badge && (
+                  <div style={{
+                    position: 'absolute', top: 12, left: 12,
+                    background: badge.bg, color: badge.color,
+                    borderRadius: 20, padding: '4px 11px',
+                    fontSize: 11, fontWeight: 700, letterSpacing: '0.04em',
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.25)',
+                  }}>
+                    <span style={{ fontSize: 12 }}>{badge.icon}</span>
+                    {item.badge}
                   </div>
+                )}
 
-                  {/* Content */}
-                  <div className="p-4 space-y-2">
-                    <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <h3 className="font-bold text-gray-900 text-sm leading-tight">{product.name}</h3>
-                        <p className="text-xs text-gray-500 mt-0.5 font-medium">{cat?.icon} {cat?.name}</p>
-                      </div>
-                      <span className="text-primary-600 font-bold text-sm whitespace-nowrap">{sym}{product.price}</span>
-                    </div>
-
-                    {product.description && (
-                      <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{product.description}</p>
-                    )}
-
-                    {product.tags && product.tags.length > 0 && (
-                      <div className="flex flex-wrap gap-1">
-                        {product.tags.slice(0, 3).map(tag => (
-                          <span key={tag} className="px-2 py-0.5 bg-red-50 text-primary-600 text-xs rounded-full border border-red-100 font-medium">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-
-                    <div className="flex gap-2 pt-1">
-                      <button
-                        onClick={() => { setIsEditingProduct(product); setIsAddingProduct(false); }}
-                        className="flex-1 flex items-center justify-center gap-1.5 py-2 bg-orange-50 hover:bg-orange-100 text-orange-600 text-xs font-semibold rounded-xl transition-colors border border-orange-100"
-                      >
-                        <Edit2 size={12} /> Edit
-                      </button>
-                      <button
-                        onClick={() => setDeleteConfirm(product.id)}
-                        className="flex items-center justify-center gap-1 px-3 py-2 bg-red-50 hover:bg-red-100 text-red-500 text-xs font-semibold rounded-xl transition-colors border border-red-100"
-                      >
-                        <Trash2 size={12} />
-                      </button>
-                    </div>
-                  </div>
+                {/* Tax chip */}
+                <div style={{
+                  position: 'absolute', top: 12, right: 12,
+                  background: 'rgba(26,15,0,0.65)', backdropFilter: 'blur(4px)',
+                  color: '#E8D5B7', borderRadius: 8, padding: '4px 9px',
+                  fontSize: 10, fontWeight: 600,
+                }}>
+                  {item.taxRate}% GST
                 </div>
-              );
-            })}
-          </div>
 
-          {filteredProducts.length === 0 && (
-            <div className="text-center py-20 text-gray-400">
-              <Package size={48} className="mx-auto mb-3 opacity-30" />
-              <p className="text-lg font-semibold text-gray-500">No products found</p>
-              <p className="text-sm mt-1">Try adjusting your search or category filter</p>
-            </div>
-          )}
-        </>
-      )}
+                {/* Prep time (bottom-left on gradient) */}
+                <div style={{
+                  position: 'absolute', bottom: 10, left: 14,
+                  display: 'flex', alignItems: 'center', gap: 4,
+                  color: '#E8D5B7', fontSize: 11,
+                }}>
+                  <Clock size={11} />
+                  <span>{item.prepTime} min</span>
+                </div>
 
-      {activeTab === 'categories' && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map(cat => {
-            const productCount = products.filter(p => p.categoryId === cat.id).length;
-            return (
-              <div key={cat.id} className="bg-white border-2 border-red-100 hover:border-primary-300 rounded-2xl p-5 transition-all hover:shadow-solid group">
-                <div className="flex items-center gap-4">
-                  <div
-                    className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl shadow-solid"
-                    style={{ backgroundColor: cat.color + '20', border: `2px solid ${cat.color}50` }}
-                  >
-                    {cat.icon}
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-gray-900 text-base">{cat.name}</h3>
-                    <p className="text-gray-500 text-sm">{productCount} products</p>
-                  </div>
-                  <button
-                    onClick={() => deleteCategory(cat.id)}
-                    className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                  >
-                    <Trash2 size={15} />
-                  </button>
+                {/* Category badge (bottom-right) */}
+                <div style={{
+                  position: 'absolute', bottom: 10, right: 12,
+                  background: 'rgba(196,134,42,0.9)', color: '#fff',
+                  borderRadius: 6, padding: '3px 8px',
+                  fontSize: 10, fontWeight: 600,
+                }}>
+                  {CATEGORIES.find(c => c.id === item.catId)?.icon} {item.category}
                 </div>
               </div>
-            );
-          })}
+
+              {/* ── Card Body ───────────────────────────────── */}
+              <div style={{ padding: '18px 18px 16px', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                <h3 style={{
+                  fontFamily: '"Lucida Calligraphy", cursive',
+                  fontWeight: 700, fontSize: 19, fontStyle: 'italic',
+                  color: '#1A0F00', marginBottom: 6, lineHeight: 1.2,
+                }}>
+                  {item.name}
+                </h3>
+                <p style={{
+                  fontSize: 13, color: '#5C3D1E', lineHeight: 1.65,
+                  marginBottom: 14, flex: 1,
+                }}>
+                  {item.description}
+                </p>
+
+                {/* Tags */}
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 5, marginBottom: 14 }}>
+                  {item.tags.map(tag => (
+                    <span key={tag} style={{
+                      background: '#F5EFE8', color: '#6B3A2A',
+                      borderRadius: 6, padding: '3px 9px',
+                      fontSize: 11, fontWeight: 600,
+                    }}>
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+
+                {/* Price row + action buttons */}
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'auto' }}>
+                  <div>
+                    <span style={{ fontWeight: 800, fontSize: 24, color: '#6B3A2A' }}>
+                      {sym}{item.price}
+                    </span>
+                    <span style={{ fontSize: 11, color: '#9B7B58', marginLeft: 4 }}>+ GST</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 6 }}>
+                    <button
+                      onClick={() => setIsAddingProduct(true)}
+                      style={{
+                        display: 'flex', alignItems: 'center', gap: 5,
+                        padding: '8px 14px', borderRadius: 10, border: 'none', cursor: 'pointer',
+                        background: 'linear-gradient(135deg, #8B5E3C, #6B3A2A)',
+                        color: '#fff', fontWeight: 700, fontSize: 12,
+                        boxShadow: '0 3px 10px rgba(107,58,42,0.3)',
+                      }}
+                    >
+                      <Edit2 size={12} /> Edit
+                    </button>
+                    <button
+                      onClick={() => setDeleteConfirm(item.id)}
+                      style={{
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        width: 36, height: 36, borderRadius: 10, border: '1px solid #FCA5A5',
+                        background: '#FEE2E2', color: '#DC2626', cursor: 'pointer',
+                      }}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {filtered.length === 0 && (
+        <div className="text-center py-20 text-gray-400">
+          <Package size={48} className="mx-auto mb-3 opacity-30" />
+          <p className="text-lg font-semibold text-gray-500">No items found</p>
+          <p className="text-sm mt-1">Try a different search term or category</p>
         </div>
       )}
 
-      {/* ── Product Modal ── */}
+      {/* ── Add/Edit Product Modal ───────────────────────────── */}
       {(isAddingProduct || isEditingProduct) && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white border-2 border-red-100 rounded-2xl w-full max-w-lg shadow-float">
             <div className="flex items-center justify-between px-6 py-4 border-b border-red-100 bg-gradient-to-r from-red-50 to-orange-50 rounded-t-2xl">
-              <h2 className="text-lg font-bold text-gray-900">{isEditingProduct ? '✏️ Edit Product' : '➕ Add Product'}</h2>
+              <h2 className="text-lg font-bold text-gray-900">{isEditingProduct ? '✏️ Edit Item' : '➕ Add Menu Item'}</h2>
               <button onClick={() => { setIsAddingProduct(false); setIsEditingProduct(null); }} className="text-gray-400 hover:text-gray-700 transition-colors">
                 <X size={20} />
               </button>
             </div>
-            <form onSubmit={handleSaveProduct} className="p-6 space-y-4">
+            <div className="p-6 space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Product Name *</label>
-                  <input name="name" required defaultValue={isEditingProduct?.name} placeholder="e.g. Cappuccino" className={inputCls} />
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Item Name *</label>
+                  <input className={inputCls} placeholder="e.g. Cappuccino" defaultValue={isEditingProduct?.name} />
                 </div>
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Category *</label>
-                  <select name="categoryId" required defaultValue={isEditingProduct?.categoryId} className={inputCls}>
-                    {categories.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Price (₹) *</label>
+                  <input className={inputCls} type="number" placeholder="120" defaultValue={isEditingProduct?.price} />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Tax Rate (%)</label>
+                  <input className={inputCls} type="number" placeholder="5" />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Category</label>
+                  <select className={inputCls}>
+                    {CATEGORIES.filter(c => c.id !== 'all').map(c => (
+                      <option key={c.id} value={c.id}>{c.icon} {c.label}</option>
+                    ))}
                   </select>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Price ({sym}) *</label>
-                  <input name="price" type="number" min="0" step="0.01" required defaultValue={isEditingProduct?.price} className={inputCls} />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Emoji Icon</label>
-                  <input name="image" defaultValue={isEditingProduct?.image || '🍽️'} className={inputCls} placeholder="e.g. ☕" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Prep Time (min)</label>
-                  <input name="preparationTime" type="number" min="1" defaultValue={isEditingProduct?.preparationTime || 10} className={inputCls} />
                 </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Description</label>
-                  <textarea name="description" rows={2} defaultValue={isEditingProduct?.description} className={inputCls + ' resize-none'} />
+                  <textarea className={inputCls + ' resize-none'} rows={2} placeholder="Describe this item..." defaultValue={isEditingProduct?.description} />
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Tags (comma-separated)</label>
-                  <input name="tags" defaultValue={isEditingProduct?.tags?.join(', ')} placeholder="e.g. hot, bestseller, vegan" className={inputCls} />
-                </div>
-                <div className="col-span-2 flex items-center gap-3">
-                  <input name="available" type="checkbox" id="available" defaultChecked={isEditingProduct ? isEditingProduct.available : true} className="w-4 h-4 accent-primary-500" />
-                  <label htmlFor="available" className="text-sm font-semibold text-gray-700">Available for ordering</label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Image URL</label>
+                  <input className={inputCls} placeholder="https://..." defaultValue={isEditingProduct?.image} />
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => { setIsAddingProduct(false); setIsEditingProduct(null); }} className="flex-1 py-2.5 bg-gray-50 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors">
+                <button
+                  type="button"
+                  onClick={() => { setIsAddingProduct(false); setIsEditingProduct(null); }}
+                  className="flex-1 py-2.5 bg-gray-50 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors"
+                >
                   Cancel
                 </button>
-                <button type="submit" className="flex-1 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white rounded-xl font-bold transition-all shadow-solid">
-                  {isEditingProduct ? 'Update Product' : 'Add Product'}
+                <button
+                  type="button"
+                  onClick={() => { setIsAddingProduct(false); setIsEditingProduct(null); }}
+                  className="flex-1 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white rounded-xl font-bold transition-all shadow-solid"
+                >
+                  {isEditingProduct ? 'Update Item' : 'Add Item'}
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ── Category Modal ── */}
-      {isAddingCategory && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white border-2 border-red-100 rounded-2xl w-full max-w-md shadow-float">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-red-100 bg-gradient-to-r from-red-50 to-orange-50 rounded-t-2xl">
-              <h2 className="text-lg font-bold text-gray-900">➕ Add Category</h2>
-              <button onClick={() => setIsAddingCategory(false)} className="text-gray-400 hover:text-gray-700 transition-colors"><X size={20} /></button>
             </div>
-            <form onSubmit={handleSaveCategory} className="p-6 space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Category Name *</label>
-                <input name="name" required placeholder="e.g. Hot Beverages" className={inputCls} />
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Icon Emoji</label>
-                <div className="grid grid-cols-8 gap-2 mb-2">
-                  {EMOJI_OPTIONS.map(e => (
-                    <label key={e} className="cursor-pointer">
-                      <input type="radio" name="icon" value={e} className="sr-only peer" />
-                      <div className="w-9 h-9 flex items-center justify-center text-xl rounded-lg bg-red-50 border-2 border-red-100 peer-checked:border-primary-500 peer-checked:bg-red-100 hover:bg-orange-50 transition-colors">
-                        {e}
-                      </div>
-                    </label>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Color</label>
-                <input name="color" type="color" defaultValue="#ef4444" className="w-full h-10 rounded-xl border-2 border-red-100 bg-white cursor-pointer" />
-              </div>
-              <div className="flex gap-3 pt-2">
-                <button type="button" onClick={() => setIsAddingCategory(false)} className="flex-1 py-2.5 bg-gray-50 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors">Cancel</button>
-                <button type="submit" className="flex-1 py-2.5 bg-gradient-to-r from-primary-500 to-accent-500 hover:from-primary-600 hover:to-accent-600 text-white rounded-xl font-bold transition-all shadow-solid">Add Category</button>
-              </div>
-            </form>
           </div>
         </div>
       )}
 
-      {/* ── Delete Confirm ── */}
+      {/* ── Delete Confirm ───────────────────────────────────── */}
       {deleteConfirm && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white border-2 border-red-200 rounded-2xl w-full max-w-sm shadow-float p-6 text-center space-y-4">
@@ -354,12 +455,12 @@ export default function Products() {
               <Trash2 size={24} className="text-red-500" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-gray-900">Delete Product?</h3>
-              <p className="text-gray-500 text-sm mt-1">This action cannot be undone.</p>
+              <h3 className="text-lg font-bold text-gray-900">Remove Item?</h3>
+              <p className="text-gray-500 text-sm mt-1">This will remove the item from the menu display.</p>
             </div>
             <div className="flex gap-3">
               <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 bg-gray-50 border-2 border-gray-200 text-gray-600 rounded-xl font-semibold hover:bg-gray-100 transition-colors">Cancel</button>
-              <button onClick={() => { deleteProduct(deleteConfirm); setDeleteConfirm(null); }} className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-colors">Delete</button>
+              <button onClick={() => setDeleteConfirm(null)} className="flex-1 py-2.5 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-colors">Remove</button>
             </div>
           </div>
         </div>

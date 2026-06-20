@@ -1,13 +1,23 @@
 import json
 import logging
+import os
 import random
 import string
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List, Optional
 from pydantic import BaseModel
 from datetime import datetime
+from dotenv import load_dotenv
+import razorpay
+
+load_dotenv()
+
+razorpay_client = razorpay.Client(
+    auth=(os.getenv("RAZORPAY_KEY_ID", ""), os.getenv("RAZORPAY_KEY_SECRET", ""))
+)
 
 from database import engine, Base, get_db, SessionLocal
 from models import (
@@ -27,7 +37,21 @@ try:
 except Exception as e:
     logger.error(f"Error creating database tables: {e}")
 
-app = FastAPI(title="Café Flow POS Backend", version="2.0.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Application lifespan: runs startup logic before yield, shutdown logic after"""
+    db = SessionLocal()
+    try:
+        if db.query(DBFloor).first() is None:
+            logger.info("No floors found, auto-seeding database...")
+            seed_database(db)
+    except Exception as e:
+        logger.error(f"Auto-seed error: {e}")
+    finally:
+        db.close()
+    yield  # Application runs here
+
+app = FastAPI(title="Café Flow POS Backend", version="2.0.0", lifespan=lifespan)
 
 # CORS middleware configuration
 app.add_middleware(
@@ -47,7 +71,7 @@ class FloorSchema(BaseModel):
     active: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TableSchema(BaseModel):
     id: str
@@ -60,7 +84,7 @@ class TableSchema(BaseModel):
     y: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class TableStatusUpdateSchema(BaseModel):
     status: str
@@ -73,7 +97,7 @@ class CategorySchema(BaseModel):
     active: bool
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ProductSchema(BaseModel):
     id: str
@@ -87,7 +111,7 @@ class ProductSchema(BaseModel):
     preparationTime: Optional[int] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CustomerSchema(BaseModel):
     id: str
@@ -102,7 +126,7 @@ class CustomerSchema(BaseModel):
     lastVisit: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CustomerStatsUpdate(BaseModel):
     totalSpent: float
@@ -123,7 +147,7 @@ class EmployeeSchema(BaseModel):
     hireDate: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class EmployeeLoginRequest(BaseModel):
     username: str
@@ -145,7 +169,7 @@ class OrderLineSchema(BaseModel):
     status: str = "pending"
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class OrderSchema(BaseModel):
     id: str
@@ -171,7 +195,7 @@ class OrderSchema(BaseModel):
     notes: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class PaymentSchema(BaseModel):
     id: str
@@ -182,7 +206,7 @@ class PaymentSchema(BaseModel):
     reference: Optional[str] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class KDSTicketItemSchema(BaseModel):
     name: str
@@ -191,7 +215,7 @@ class KDSTicketItemSchema(BaseModel):
     status: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class KDSTicketSchema(BaseModel):
     id: str
@@ -206,7 +230,7 @@ class KDSTicketSchema(BaseModel):
     priority: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CouponSchema(BaseModel):
     id: str
@@ -224,7 +248,7 @@ class CouponSchema(BaseModel):
     autoAssignThreshold: Optional[float] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CouponValidateRequest(BaseModel):
     code: str
@@ -246,7 +270,7 @@ class AuditLogSchema(BaseModel):
     timestamp: str
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # ── Utility Functions ──────────────────────────────────────────
 
@@ -312,42 +336,76 @@ def seed_database(db: Session = Depends(get_db)):
     categories = [
         DBCategory(id="cat-1", name="Hot Beverages", icon="☕", color="#be4bdb", active=True),
         DBCategory(id="cat-2", name="Cold Beverages", icon="🧊", color="#228be6", active=True),
-        DBCategory(id="cat-3", name="Breakfast", icon="🍳", color="#f59f00", active=True),
-        DBCategory(id="cat-4", name="Main Course", icon="🍽️", color="#e64980", active=True),
-        DBCategory(id="cat-5", name="Desserts", icon="🍰", color="#fd7e14", active=True),
-        DBCategory(id="cat-6", name="Snacks", icon="🥪", color="#40c057", active=True),
-        DBCategory(id="cat-7", name="Salads", icon="🥗", color="#20c997", active=True)
+        DBCategory(id="cat-3", name="Quick Bites", icon="🥪", color="#40c057", active=True),
+        DBCategory(id="cat-4", name="Desserts", icon="🍰", color="#fd7e14", active=True),
     ]
     db.add_all(categories)
 
-    # Seed Products
     products = [
-        DBProduct(id="prod-1", categoryId="cat-1", name="Espresso", price=149.0, image="☕", available=True, description="Rich single-shot espresso", tags=json.dumps(["bestseller", "quick"]), preparationTime=3),
-        DBProduct(id="prod-2", categoryId="cat-1", name="Cappuccino", price=199.0, image="☕", available=True, description="Classic cappuccino with foam art", tags=json.dumps(["bestseller"]), preparationTime=5),
-        DBProduct(id="prod-3", categoryId="cat-1", name="Café Latte", price=219.0, image="☕", available=True, description="Smooth latte with steamed milk", tags=json.dumps(["popular"]), preparationTime=5),
-        DBProduct(id="prod-4", categoryId="cat-1", name="Matcha Latte", price=249.0, image="🍵", available=True, description="Premium Japanese matcha", tags=json.dumps(["trending"]), preparationTime=5),
-        DBProduct(id="prod-5", categoryId="cat-1", name="Hot Chocolate", price=179.0, image="🍫", available=True, description="Rich Belgian chocolate", tags=json.dumps([]), preparationTime=4),
-        DBProduct(id="prod-6", categoryId="cat-2", name="Iced Americano", price=179.0, image="🧊", available=True, description="Cold brew Americano over ice", tags=json.dumps(["bestseller"]), preparationTime=3),
-        DBProduct(id="prod-7", categoryId="cat-2", name="Mango Smoothie", price=229.0, image="🥭", available=True, description="Fresh mango blend with yogurt", tags=json.dumps(["seasonal"]), preparationTime=5),
-        DBProduct(id="prod-8", categoryId="cat-2", name="Berry Blast", price=249.0, image="🫐", available=True, description="Mixed berries smoothie", tags=json.dumps(["trending"]), preparationTime=5),
-        DBProduct(id="prod-9", categoryId="cat-2", name="Fresh Lime Soda", price=129.0, image="🍋", available=True, description="Refreshing lime with soda", tags=json.dumps(["quick"]), preparationTime=2),
-        DBProduct(id="prod-10", categoryId="cat-2", name="Cold Brew", price=199.0, image="☕", available=True, description="18-hour cold brew coffee", tags=json.dumps(["premium"]), preparationTime=2),
-        DBProduct(id="prod-11", categoryId="cat-3", name="Avocado Toast", price=299.0, image="🥑", available=True, description="Sourdough with smashed avocado & egg", tags=json.dumps(["bestseller", "healthy"]), preparationTime=10),
-        DBProduct(id="prod-12", categoryId="cat-3", name="Pancake Stack", price=279.0, image="🥞", available=True, description="Fluffy pancakes with maple syrup", tags=json.dumps(["popular"]), preparationTime=12),
-        DBProduct(id="prod-13", categoryId="cat-3", name="Eggs Benedict", price=349.0, image="🍳", available=True, description="Poached eggs with hollandaise", tags=json.dumps(["premium"]), preparationTime=15),
-        DBProduct(id="prod-14", categoryId="cat-3", name="French Toast", price=249.0, image="🍞", available=True, description="Cinnamon French toast with berries", tags=json.dumps([]), preparationTime=10),
-        DBProduct(id="prod-15", categoryId="cat-4", name="Grilled Chicken Burger", price=399.0, image="🍔", available=True, description="Juicy grilled chicken with special sauce", tags=json.dumps(["bestseller"]), preparationTime=18),
-        DBProduct(id="prod-16", categoryId="cat-4", name="Margherita Pizza", price=449.0, image="🍕", available=True, description="Classic wood-fired pizza", tags=json.dumps(["popular"]), preparationTime=20),
-        DBProduct(id="prod-17", categoryId="cat-4", name="Pasta Alfredo", price=379.0, image="🍝", available=True, description="Creamy alfredo with grilled chicken", tags=json.dumps([]), preparationTime=15),
-        DBProduct(id="prod-18", categoryId="cat-4", name="Fish & Chips", price=429.0, image="🐟", available=True, description="Beer-battered fish with crispy fries", tags=json.dumps(["premium"]), preparationTime=18),
-        DBProduct(id="prod-19", categoryId="cat-5", name="Tiramisu", price=299.0, image="🍰", available=True, description="Classic Italian tiramisu", tags=json.dumps(["bestseller"]), preparationTime=5),
-        DBProduct(id="prod-20", categoryId="cat-5", name="Chocolate Lava Cake", price=349.0, image="🍫", available=True, description="Warm chocolate cake with molten center", tags=json.dumps(["premium"]), preparationTime=12),
-        DBProduct(id="prod-21", categoryId="cat-5", name="Cheesecake", price=279.0, image="🧀", available=True, description="New York style cheesecake", tags=json.dumps(["popular"]), preparationTime=5),
-        DBProduct(id="prod-22", categoryId="cat-6", name="Loaded Fries", price=199.0, image="🍟", available=True, description="Crispy fries with cheese & jalapeños", tags=json.dumps(["bestseller"]), preparationTime=8),
-        DBProduct(id="prod-23", categoryId="cat-6", name="Nachos Grande", price=249.0, image="🌮", available=True, description="Tortilla chips with salsa & guac", tags=json.dumps(["popular"]), preparationTime=10),
-        DBProduct(id="prod-24", categoryId="cat-6", name="Bruschetta", price=229.0, image="🍅", available=True, description="Toasted bread with tomato & basil", tags=json.dumps([]), preparationTime=8),
-        DBProduct(id="prod-25", categoryId="cat-7", name="Caesar Salad", price=279.0, image="🥗", available=True, description="Romaine with parmesan & croutons", tags=json.dumps(["healthy", "popular"]), preparationTime=7),
-        DBProduct(id="prod-26", categoryId="cat-7", name="Greek Salad", price=259.0, image="🥗", available=True, description="Fresh veggies with feta & olives", tags=json.dumps(["healthy"]), preparationTime=7)
+        # ── Hot Beverages ──────────────────────────────────────────
+        DBProduct(
+            id="prod-1", categoryId="cat-1", name="Espresso", price=120.0,
+            image="https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Rich, bold single-shot espresso. Tax: 10%",
+            tags=json.dumps(["bestseller", "quick"]), preparationTime=3
+        ),
+        DBProduct(
+            id="prod-2", categoryId="cat-1", name="Cappuccino", price=150.0,
+            image="https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Velvety espresso with steamed milk & thick foam. Tax: 6%",
+            tags=json.dumps(["bestseller"]), preparationTime=5
+        ),
+        DBProduct(
+            id="prod-3", categoryId="cat-1", name="Latte", price=160.0,
+            image="https://images.unsplash.com/photo-1561882468-9110d70d2f26?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Smooth espresso with creamy steamed milk. Tax: 6%",
+            tags=json.dumps(["popular"]), preparationTime=5
+        ),
+        DBProduct(
+            id="prod-4", categoryId="cat-1", name="Tea", price=80.0,
+            image="https://images.unsplash.com/photo-1597318181409-cf64d0b5d8a2?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Freshly brewed aromatic tea. Tax: 5%",
+            tags=json.dumps(["quick"]), preparationTime=3
+        ),
+        # ── Cold Beverages ─────────────────────────────────────────
+        DBProduct(
+            id="prod-5", categoryId="cat-2", name="Cold Coffee", price=180.0,
+            image="https://images.unsplash.com/photo-1461023058943-07fcbe16d735?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Chilled blended coffee with ice cream. Tax: 6%",
+            tags=json.dumps(["bestseller", "trending"]), preparationTime=5
+        ),
+        DBProduct(
+            id="prod-6", categoryId="cat-2", name="Juice & Smoothies", price=170.0,
+            image="https://images.unsplash.com/photo-1638176066666-ffb2f013c7dd?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Fresh seasonal fruits blended to perfection. Tax: 5%",
+            tags=json.dumps(["healthy", "popular"]), preparationTime=5
+        ),
+        # ── Quick Bites ────────────────────────────────────────────
+        DBProduct(
+            id="prod-7", categoryId="cat-3", name="Sandwich", price=150.0,
+            image="https://images.unsplash.com/photo-1539252554453-80ab65ce3586?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Freshly prepared grilled sandwich with fillings of your choice. Tax: 5%",
+            tags=json.dumps(["popular", "quick"]), preparationTime=8
+        ),
+        DBProduct(
+            id="prod-8", categoryId="cat-3", name="Burger", price=200.0,
+            image="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Juicy patty with fresh veggies in a toasted bun. Tax: 12%",
+            tags=json.dumps(["bestseller"]), preparationTime=12
+        ),
+        DBProduct(
+            id="prod-9", categoryId="cat-3", name="Pizza", price=250.0,
+            image="https://images.unsplash.com/photo-1604068549290-dea0e4a30536?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Wood-fired pizza with premium toppings. Tax: 12%",
+            tags=json.dumps(["popular", "premium"]), preparationTime=20
+        ),
+        # ── Desserts ───────────────────────────────────────────────
+        DBProduct(
+            id="prod-10", categoryId="cat-4", name="Pastries & Cakes", price=140.0,
+            image="https://images.unsplash.com/photo-1558303046-924c3a3c9da5?auto=format&fit=crop&w=600&q=80",
+            available=True, description="Freshly baked pastries and cakes made daily. Tax: 5%",
+            tags=json.dumps(["popular"]), preparationTime=5
+        ),
     ]
     db.add_all(products)
 
@@ -393,16 +451,7 @@ def seed_database(db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail="Database seeding failed")
 
 
-# Auto-seed database on server start
-@app.on_event("startup")
-def startup_event():
-    db = SessionLocal()
-    try:
-        if db.query(DBFloor).first() is None:
-            logger.info("No floors found, auto-seeding...")
-            seed_database(db)
-    finally:
-        db.close()
+# Auto-seed logic is now handled in the lifespan context manager above.
 
 
 # ── AUTH ──────────────────────────────────────────────────────
@@ -770,6 +819,55 @@ def create_payment(payment: PaymentSchema, db: Session = Depends(get_db)):
     db.refresh(db_pmt)
     return db_pmt
 
+
+# --- RAZORPAY INTEGRATION ---
+class RazorpayOrderRequest(BaseModel):
+    amount: float  # amount in INR (e.g. 350.00)
+    currency: str = "INR"
+    receipt: str = ""
+
+class RazorpayVerifyRequest(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+
+@app.post("/api/razorpay/create-order")
+def create_razorpay_order(data: RazorpayOrderRequest):
+    """Create a Razorpay order for online payment (UPI / Card)"""
+    try:
+        amount_paise = int(round(data.amount * 100))
+        order_data = {
+            "amount": amount_paise,
+            "currency": data.currency,
+            "receipt": data.receipt or f"rcpt_{int(datetime.now().timestamp())}",
+            "payment_capture": 1  # auto-capture
+        }
+        rzp_order = razorpay_client.order.create(data=order_data)
+        return {
+            "id": rzp_order["id"],
+            "amount": rzp_order["amount"],
+            "currency": rzp_order["currency"],
+            "key_id": os.getenv("RAZORPAY_KEY_ID", ""),
+        }
+    except Exception as e:
+        logger.error(f"Razorpay order creation failed: {e}")
+        raise HTTPException(status_code=500, detail=f"Razorpay error: {str(e)}")
+
+@app.post("/api/razorpay/verify-payment")
+def verify_razorpay_payment(data: RazorpayVerifyRequest):
+    """Verify Razorpay payment signature"""
+    try:
+        razorpay_client.utility.verify_payment_signature({
+            "razorpay_order_id": data.razorpay_order_id,
+            "razorpay_payment_id": data.razorpay_payment_id,
+            "razorpay_signature": data.razorpay_signature,
+        })
+        return {"verified": True, "payment_id": data.razorpay_payment_id}
+    except razorpay.errors.SignatureVerificationError:
+        raise HTTPException(status_code=400, detail="Payment verification failed")
+    except Exception as e:
+        logger.error(f"Razorpay verification error: {e}")
+        raise HTTPException(status_code=500, detail=f"Verification error: {str(e)}")
 
 # --- KDS TICKETS ---
 @app.get("/api/kds-tickets", response_model=List[KDSTicketSchema])

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import {
   CalendarDays, Clock, Users, User, ArrowRight, CheckCircle2,
-  XCircle, Phone, Mail, MessageSquare, AlertTriangle, RefreshCw
+  XCircle, Phone, Mail, MessageSquare, AlertTriangle, RefreshCw, ArrowLeft
 } from 'lucide-react';
 import { useSettingsStore } from '../store';
 import { Link, useNavigate } from 'react-router-dom';
@@ -221,10 +221,15 @@ export default function Reservation() {
 
       {/* Navigation */}
       <nav className="absolute top-0 left-0 right-0 p-6 flex justify-between items-center z-20">
-        <Link to="/" className="text-xl font-display font-bold text-surface-900 tracking-tight flex items-center gap-2">
-          <span className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-sm">☕</span>
-          {settings.restaurantName}
-        </Link>
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate('/')} className="p-2 hover:bg-white/10 rounded-xl transition-colors text-surface-900">
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <Link to="/" className="text-xl font-display font-bold text-surface-900 tracking-tight flex items-center gap-2">
+            <span className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center text-sm">☕</span>
+            {settings.restaurantName}
+          </Link>
+        </div>
         <Link to="/login" className="text-surface-900/70 hover:text-surface-900 font-medium text-sm transition-colors">
           Staff Login
         </Link>

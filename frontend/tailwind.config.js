@@ -47,8 +47,8 @@ export default {
         }
       },
       fontFamily: {
-        sans: ['"DM Sans"', 'sans-serif'],
-        display: ['Fraunces', 'serif'],
+        sans: ['"Lucida Calligraphy"', 'cursive', 'sans-serif'],
+        display: ['"Lucida Calligraphy"', 'cursive', 'serif'],
       },
       boxShadow: {
         'solid':       '0 4px 20px rgba(220, 38, 38, 0.08)',

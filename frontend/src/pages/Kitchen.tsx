@@ -1,5 +1,5 @@
 // ============================================================
-// Café Totaram — Kitchen Display System (KDS)
+// Velora Café — Kitchen Display System (KDS)
 // Real-time order status sync to OrderTrack via shared store
 // ============================================================
 import { useState, useEffect } from 'react';

@@ -1,5 +1,5 @@
 // ============================================================
-// Café Totaram — Order Tracking Page (Public)
+// Velora Café — Order Tracking Page (Public)
 // ============================================================
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -65,8 +65,7 @@ export default function OrderTrack() {
           className="w-full h-full bg-cover bg-center animate-slow-zoom fixed"
           style={{ backgroundImage: 'url(/images/veloura_cafe_bg.png)' }}
         />
-        <div className="absolute inset-0 bg-black/40 fixed" />
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-900/80 via-primary-800/60 to-black/60 fixed" />
+        <div className="absolute inset-0 bg-black/60 fixed" />
       </div>
 
       <div className="relative z-10">

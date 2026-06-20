@@ -216,7 +216,7 @@ export default function POS() {
             placeholder="Search menu..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 bg-surface-50 border border-surface-300 rounded-xl text-surface-900 placeholder-gray-600 text-sm focus:outline-none focus:border-primary-500/50 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 bg-surface-50 border border-surface-300 rounded-xl text-surface-900 placeholder-surface-400 text-sm focus:outline-none focus:border-primary-500/50 transition-colors"
           />
         </div>
 
@@ -229,14 +229,20 @@ export default function POS() {
                 <button
                   key={product.id}
                   onClick={() => addToCart(product)}
-                  className="bg-surface-50 hover:bg-gray-750 border border-surface-300 hover:border-primary-500/40 rounded-xl p-3 text-left transition-all group relative"
+                  className="bg-white hover:bg-red-50 border border-surface-200 hover:border-primary-500/40 rounded-xl p-3 text-left transition-all group relative"
                 >
                   {inCart && (
                     <span className="absolute top-2 right-2 w-5 h-5 bg-primary-500 text-white rounded-full text-[10px] font-bold flex items-center justify-center">
                       {inCart.quantity}
                     </span>
                   )}
-                  <div className="text-4xl mb-3 group-hover:scale-110 transition-transform duration-200">{product.image}</div>
+                  <div className="w-14 h-14 mb-3 rounded-lg overflow-hidden flex items-center justify-center bg-surface-200 text-4xl group-hover:scale-110 transition-transform duration-200">
+                    {product.image.startsWith('http') ? (
+                      <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                    ) : (
+                      product.image
+                    )}
+                  </div>
                   <p className="font-semibold text-surface-900 text-sm leading-tight mb-1 truncate">{product.name}</p>
                   <p className="text-primary-600 font-bold text-sm">{settings.currencySymbol}{product.price.toFixed(0)}</p>
                 </button>
@@ -271,7 +277,7 @@ export default function POS() {
             <select
               value={selectedCustomer}
               onChange={e => setSelectedCustomer(e.target.value)}
-              className="bg-transparent text-sm text-gray-300 outline-none w-full cursor-pointer"
+              className="bg-transparent text-sm text-surface-700 outline-none w-full cursor-pointer"
             >
               <option value="">Walk-in Customer</option>
               {customers.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -320,7 +326,7 @@ export default function POS() {
                   placeholder="Coupon code"
                   value={couponCode}
                   onChange={e => { setCouponCode(e.target.value.toUpperCase()); setCouponResult(null); }}
-                  className="w-full pl-8 pr-3 py-2 bg-surface-50 border border-surface-300 rounded-lg text-surface-900 placeholder-gray-600 text-xs focus:outline-none focus:border-primary-500/50 transition-colors uppercase"
+                  className="w-full pl-8 pr-3 py-2 bg-surface-50 border border-surface-300 rounded-lg text-surface-900 placeholder-surface-400 text-xs focus:outline-none focus:border-primary-500/50 transition-colors uppercase"
                 />
               </div>
               <button
@@ -360,7 +366,7 @@ export default function POS() {
               </div>
               <div className="pt-2 border-t border-surface-300 mt-2">
                 <div className="flex justify-between items-baseline">
-                  <span className="text-gray-300 text-sm font-semibold">Amount Due</span>
+                  <span className="text-surface-600 text-sm font-semibold">Amount Due</span>
                   <span className="text-3xl font-bold text-primary-600">{settings.currencySymbol}{total.toFixed(0)}</span>
                 </div>
               </div>

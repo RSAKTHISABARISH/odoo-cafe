@@ -206,7 +206,7 @@ export default function Reports() {
                       i === 2 ? 'bg-orange-900/30 text-orange-400 border border-orange-700/30' : 
                       'bg-surface-50 text-surface-500'
                     }`}>{i + 1}</span>
-                    <span className="text-gray-200 font-medium truncate max-w-[160px]">{p.name}</span>
+                    <span className="text-surface-700 font-medium truncate max-w-[160px]">{p.name}</span>
                   </div>
                   <div className="flex items-center gap-3 text-right">
                     <span className="text-surface-500 text-xs font-mono">{p.count} qty</span>
@@ -235,7 +235,7 @@ export default function Reports() {
               return (
                 <div key={method} className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-gray-300 flex items-center gap-2 capitalize font-medium">
+                    <span className="text-surface-700 flex items-center gap-2 capitalize font-medium">
                       {PAYMENT_ICONS[method] || '💰'} {method}
                     </span>
                     <div className="flex items-center gap-3">

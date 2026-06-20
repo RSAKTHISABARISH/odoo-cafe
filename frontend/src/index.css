@@ -7,13 +7,21 @@
 @layer base {
   body {
     @apply bg-surface-100 text-surface-900 font-sans antialiased overflow-x-hidden;
-    background: linear-gradient(135deg, #FFF8F5 0%, #FFF5F0 50%, #FFF0EA 100%);
+    background-image: linear-gradient(135deg, rgba(253, 250, 245, 0.85) 0%, rgba(253, 250, 245, 0.92) 100%), url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     min-height: 100vh;
+    font-style: italic;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-display tracking-tight;
+    @apply font-display tracking-tight font-bold italic;
   }
+
+  h1 { @apply text-4xl sm:text-5xl text-primary-900 drop-shadow-sm; }
+  h2 { @apply text-3xl sm:text-4xl text-primary-800 drop-shadow-sm; }
+  h3 { @apply text-2xl sm:text-3xl text-primary-800; }
 }
 
 @layer components {
@@ -56,6 +64,11 @@
            hover:bg-primary-50;
   }
 
+  .btn-secondary {
+    @apply btn bg-white border border-red-200 text-primary-600
+           hover:bg-red-50 hover:border-red-300 shadow-sm;
+  }
+
   /* ── Scrollbar ──────────────────────────────────────────── */
   ::-webkit-scrollbar          { @apply w-1.5 h-1.5; }
   ::-webkit-scrollbar-track    { @apply bg-surface-100; }
@@ -83,3 +96,35 @@
   border-color: #F97316;
   outline: none;
 }
+
+/* ── Landing Page Animations ─────────────────────────────────── */
+@keyframes slow-zoom {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.08); }
+}
+
+.animate-slow-zoom {
+  animation: slow-zoom 20s ease-in-out infinite alternate;
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(-12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.2s ease-out;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out;
+}
+
+/* ── No-scrollbar utility (global) ───────────────────────────── */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

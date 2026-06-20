@@ -1,5 +1,5 @@
 // ============================================================
-// Café Totaram — Public Landing Page
+// Velora Café — Public Landing Page
 // ============================================================
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -60,7 +60,7 @@ export default function Landing() {
             <div className="w-11 h-11 bg-primary-600 rounded-xl flex items-center justify-center text-accent-400 font-display text-xl shadow-md group-hover:scale-105 transition-transform">
               ☕
             </div>
-            <span className={`font-display text-2xl tracking-wide transition-colors ${scrolled ? 'text-primary-700' : 'text-surface-900'}`}>
+            <span className={`font-display text-2xl tracking-wide transition-colors drop-shadow-md ${scrolled ? 'text-primary-700' : 'text-white'}`}>
               {settings.restaurantName}
             </span>
           </button>
@@ -74,7 +74,7 @@ export default function Landing() {
                 className={`px-4 py-2 rounded-full text-sm font-semibold tracking-wide transition-all ${
                   scrolled
                     ? 'text-surface-700 hover:text-primary-700 hover:bg-primary-50'
-                    : 'text-surface-900/90 hover:text-surface-900 hover:bg-white/10'
+                    : 'text-white/90 hover:text-white hover:bg-white/10 drop-shadow-sm'
                 }`}
               >
                 {link.label}
@@ -86,24 +86,24 @@ export default function Landing() {
           <div className="hidden md:flex items-center gap-3">
             {isAuthenticated ? (
               <button onClick={() => navigate('/dashboard')}
-                className="flex items-center gap-2 px-5 py-2.5 bg-accent-500 hover:bg-accent-600 text-surface-900 rounded-full text-sm font-bold tracking-wide transition-all shadow-md">
+                className="flex items-center gap-2 px-5 py-2.5 bg-accent-500 hover:bg-accent-600 text-white rounded-full text-sm font-bold tracking-wide transition-all shadow-md">
                 <ShieldCheck className="w-4 h-4" /> Dashboard
               </button>
             ) : (
               <button onClick={() => navigate('/login')}
-                className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-accent-400 rounded-full text-sm font-bold tracking-wide transition-all shadow-md">
+                className="flex items-center gap-2 px-5 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-full text-sm font-bold tracking-wide transition-all shadow-md">
                 <ShieldCheck className="w-4 h-4" /> Staff Login
               </button>
             )}
             <button onClick={() => navigate('/self-order')}
-              className="flex items-center gap-2 px-5 py-2.5 bg-accent-500 hover:bg-accent-600 text-surface-900 rounded-full text-sm font-bold tracking-wide transition-all shadow-md">
+              className="flex items-center gap-2 px-5 py-2.5 bg-accent-500 hover:bg-accent-600 text-white rounded-full text-sm font-bold tracking-wide transition-all shadow-md">
               Order Now <ArrowRight className="w-4 h-4" />
             </button>
           </div>
 
           {/* Mobile Hamburger */}
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`md:hidden p-2 rounded-xl transition-colors ${scrolled ? 'text-surface-700' : 'text-surface-900'}`}>
+            className={`md:hidden p-2 rounded-xl transition-colors ${scrolled ? 'text-surface-700' : 'text-white'}`}>
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <MenuIcon className="w-6 h-6" />}
           </button>
         </div>
@@ -151,33 +151,33 @@ export default function Landing() {
         <div className="absolute bottom-20 left-10 w-96 h-96 bg-primary-500/20 rounded-full blur-3xl" />
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto pt-20">
-          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2 mb-8 text-accent-300 text-sm font-semibold tracking-widest uppercase">
+          <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-5 py-2 mb-8 text-white text-sm font-semibold tracking-widest uppercase drop-shadow-md">
             <Star className="w-4 h-4 fill-accent-400 text-accent-400" /> Authentic South Indian Flavours
           </div>
-          <h1 className="font-display text-6xl sm:text-8xl text-surface-900 leading-none mb-6 tracking-tight">
+          <h1 className="font-display text-6xl sm:text-8xl text-white leading-none mb-6 tracking-tight drop-shadow-lg">
             {settings.restaurantName}
           </h1>
-          <p className="text-surface-900/70 text-xl sm:text-2xl font-light leading-relaxed max-w-2xl mx-auto mb-12">
+          <p className="text-white/95 text-xl sm:text-2xl font-light leading-relaxed max-w-2xl mx-auto mb-12 drop-shadow-md">
             A warm corner for your soul — freshly brewed teas, filter coffee, and home-style meals crafted with love.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 flex-wrap">
             <button onClick={() => navigate('/self-order')}
-              className="group flex items-center gap-3 px-8 py-4 bg-accent-500 hover:bg-accent-400 text-surface-900 rounded-full font-bold text-lg shadow-2xl shadow-accent-900/40 transition-all hover:scale-105">
+              className="group flex items-center gap-3 px-8 py-4 bg-accent-500 hover:bg-accent-400 text-white rounded-full font-bold text-lg shadow-xl shadow-accent-900/40 transition-all hover:scale-105">
               Order Online <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </button>
             <button onClick={() => navigate('/reservation')}
-              className="flex items-center gap-3 px-8 py-4 bg-primary-600/80 hover:bg-primary-500 backdrop-blur-sm text-surface-900 rounded-full font-bold text-lg transition-all hover:scale-105">
+              className="flex items-center gap-3 px-8 py-4 bg-primary-600/80 hover:bg-primary-500 backdrop-blur-sm text-white rounded-full font-bold text-lg shadow-lg transition-all hover:scale-105">
               Book a Table
             </button>
             <button onClick={() => navigate('/track-order')}
-              className="flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-surface-900 border border-white/30 rounded-full font-bold text-lg transition-all hover:scale-105">
+              className="flex items-center gap-3 px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/30 shadow-lg rounded-full font-bold text-lg transition-all hover:scale-105">
               Track My Order
             </button>
           </div>
 
           {/* Scroll Indicator */}
-          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-surface-900/40 animate-bounce">
-            <span className="text-xs tracking-widest uppercase">Scroll</span>
+          <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/70 animate-bounce">
+            <span className="text-xs tracking-widest uppercase font-semibold">Scroll</span>
             <ChevronDown className="w-5 h-5" />
           </div>
         </div>
@@ -187,7 +187,7 @@ export default function Landing() {
       <section className="bg-primary-600 text-surface-900 py-5">
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center sm:text-left">
           {[
-            { icon: MapPin, label: 'Location', value: 'Near Bus Stand, Totaram Nagar' },
+            { icon: MapPin, label: 'Location', value: 'Near Bus Stand, Velora Nagar' },
             { icon: Phone, label: 'Reservations', value: '+91 98765 43210' },
             { icon: Clock, label: 'Open Hours', value: '7:00 AM – 10:00 PM Daily' },
           ].map(item => (
@@ -213,7 +213,7 @@ export default function Landing() {
               Brewed with<br />tradition & love
             </h2>
             <p className="text-surface-600 text-lg leading-relaxed mb-6">
-              Café Totaram was born from a desire to bring people together over a steaming cup of authentic filter coffee.
+              Velora Café was born from a desire to bring people together over a steaming cup of authentic filter coffee.
               Since our humble beginning, we've been a neighbourhood institution — a place where every sip tells a story.
             </p>
             <p className="text-surface-500 leading-relaxed mb-8">
@@ -233,8 +233,12 @@ export default function Landing() {
             </div>
           </div>
           <div className="relative">
-            <div className="aspect-square bg-gradient-to-br from-primary-700 to-primary-900 rounded-3xl flex items-center justify-center text-[12rem] shadow-2xl">
-              ☕
+            <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl">
+              <img
+                src="https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80"
+                alt="Authentic South Indian filter coffee being served at Velora Café"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+              />
             </div>
             <div className="absolute -bottom-6 -left-6 bg-accent-400 text-surface-900 p-6 rounded-2xl shadow-xl">
               <p className="font-display text-4xl">★ 4.8</p>
@@ -273,14 +277,14 @@ export default function Landing() {
               style={{ scrollbarWidth: 'none' }}
             >
               {[
-                { name: 'Choco Chip Walnut Cookies', price: 220, img: 'https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=400&q=80&fit=crop' },
-                { name: 'Cinnamon Sugar Snaps',      price: 160, img: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&q=80&fit=crop' },
-                { name: 'Jeera Cookies',             price: 210, img: 'https://images.unsplash.com/photo-1573821663912-569905455b1c?w=400&q=80&fit=crop' },
-                { name: 'Cranberry Oatmeal Cookies', price: 230, img: 'https://images.unsplash.com/photo-1590080876072-5c4eb24b1b55?w=400&q=80&fit=crop' },
-                { name: 'Peri Peri Garlic Snaps',   price: 175, img: 'https://images.unsplash.com/photo-1605059279784-4e2bada8b6c7?w=400&q=80&fit=crop' },
-                { name: 'Brookies',                  price: 220, img: 'https://images.unsplash.com/photo-1548365328-8c6db3220e4d?w=400&q=80&fit=crop' },
-                { name: 'Almond Butter Cookies',    price: 245, img: 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=400&q=80&fit=crop' },
-                { name: 'Dark Choco Chip Cookies',  price: 255, img: 'https://images.unsplash.com/photo-1471943038886-62a8b89b7e28?w=400&q=80&fit=crop' },
+                { name: 'Choco Chip Walnut Cookies', price: 220, img: 'https://images.pexels.com/photos/2067431/pexels-photo-2067431.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                { name: 'Cinnamon Sugar Snaps',      price: 160, img: 'https://images.pexels.com/photos/230325/pexels-photo-230325.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                { name: 'Jeera Cookies',             price: 210, img: 'https://images.pexels.com/photos/3186654/pexels-photo-3186654.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                { name: 'Cranberry Oatmeal Cookies', price: 230, img: 'https://images.pexels.com/photos/1055272/pexels-photo-1055272.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                { name: 'Peri Peri Garlic Snaps',   price: 175, img: 'https://images.pexels.com/photos/890507/pexels-photo-890507.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                { name: 'Brookies',                  price: 220, img: 'https://images.pexels.com/photos/2113556/pexels-photo-2113556.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                { name: 'Almond Butter Cookies',    price: 245, img: 'https://images.pexels.com/photos/1120464/pexels-photo-1120464.jpeg?auto=compress&cs=tinysrgb&w=400' },
+                { name: 'Dark Choco Chip Cookies',  price: 255, img: 'https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=400' },
               ].map((item, i) => (
                 <div
                   key={i}
@@ -347,12 +351,14 @@ export default function Landing() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {[
-              { emoji: '🌱', title: 'Fresh Ingredients', desc: 'We source local, seasonal produce daily to ensure every dish is as fresh as it gets.' },
-              { emoji: '☕', title: 'Authentic Recipes', desc: 'Time-tested recipes passed down through generations — the flavours you\'ve been missing.' },
-              { emoji: '❤️', title: 'Made with Love', desc: 'Our team puts heart into every cup and plate. Hospitality is not just our job, it\'s our passion.' },
+              { img: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=150&q=80', title: 'Fresh Ingredients', desc: 'We source local, seasonal produce daily to ensure every dish is as fresh as it gets.' },
+              { img: 'https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&w=150&q=80', title: 'Authentic Recipes', desc: 'Time-tested recipes passed down through generations — the flavours you\'ve been missing.' },
+              { img: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=150&q=80', title: 'Made with Love', desc: 'Our team puts heart into every cup and plate. Hospitality is not just our job, it\'s our passion.' },
             ].map(item => (
               <div key={item.title} className="text-center p-8 rounded-2xl bg-primary-50 border border-primary-100 hover:border-primary-300 transition-colors">
-                <div className="text-6xl mb-5">{item.emoji}</div>
+                <div className="w-24 h-24 mx-auto mb-6 rounded-full overflow-hidden shadow-md">
+                  <img src={item.img} alt={item.title} className="w-full h-full object-cover" />
+                </div>
                 <h3 className="font-display text-2xl text-primary-700 mb-3">{item.title}</h3>
                 <p className="text-surface-500 leading-relaxed">{item.desc}</p>
               </div>
@@ -369,7 +375,7 @@ export default function Landing() {
           <p className="text-surface-900/60 text-lg mb-12">We'd love to see you. Pull up a chair, the coffee's hot.</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-12">
             {[
-              { icon: MapPin, title: 'Address', detail: 'Near Bus Stand, Totaram Nagar, India' },
+              { icon: MapPin, title: 'Address', detail: 'Near Bus Stand, Velora Nagar, India' },
               { icon: Phone, title: 'Phone', detail: '+91 98765 43210' },
               { icon: Clock, title: 'Hours', detail: 'Mon – Sun: 7 AM – 10 PM' },
             ].map(item => (
