@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aurai - Always-On Wellness Companion</title>
+  <meta name="description" content="Aurai is your always-on wellness companion. Built by leading therapists, it brings you the care and clarity right when you need it." />
+
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Askan Light Font -->
+  <style>
+    @font-face {
+      font-family: 'Askan Light';
+      src: url('https://db.onlinewebfonts.com/c/304a6edcec9f8858eeaafc2ac18243f4?family=Askan+Light') format('woff2');
+      font-weight: 300;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow: hidden;
+      height: 100vh;
+    }
+  </style>
+
+  <!-- Tailwind CDN with custom config -->
+  <script>
+    window.tailwind = { config: {
+      theme: {
+        extend: {
+          fontFamily: {
+            askan: ['"Askan Light"', 'serif'],
+            inter: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }};
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            askan: ['"Askan Light"', 'serif'],
+            inter: ['Inter', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="font-inter bg-black h-screen overflow-hidden">
+
+  <!-- ── Hero Section (Full Viewport) ───────────────────────── -->
+  <section class="relative w-full h-screen overflow-hidden">
+
+    <!-- Background Video -->
+    <video
+      id="hero-video"
+      autoplay loop muted playsinline
+      class="absolute inset-0 w-full h-full object-cover"
+      style="object-position: 80% center;"
+    >
+      <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260618_174853_aac61aa2-0f3f-4cf1-bc78-7f657dd11164.mp4" type="video/mp4">
+    </video>
+
+    <!-- Content Overlay -->
+    <div class="absolute inset-0 z-10 flex flex-col px-4 sm:px-10 lg:px-12 py-4 sm:py-8">
+
+      <!-- ── Navigation ─────────────────────────────────────── -->
+      <nav class="flex items-center justify-between relative">
+
+        <!-- Left: Logo Pill -->
+        <div class="bg-black/20 backdrop-blur-md rounded-2xl border border-white/10 px-4 py-2.5 sm:px-6 sm:py-4 flex items-center gap-3">
+
+          <!-- Pinwheel SVG Logo -->
+          <svg class="w-5 h-5 sm:w-7 sm:h-7 text-white flex-shrink-0" viewBox="0 0 256 256" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M 228 0 C 172.772 0 128 44.772 128 100 L 128 0 L 0 0 L 0 28 C 0 83.228 44.772 128 100 128 L 0 128 L 0 256 L 28 256 C 83.228 256 128 211.228 128 156 L 128 256 L 256 256 L 256 228 C 256 172.772 211.228 128 156 128 L 256 128 L 256 0 Z"/>
+          </svg>
+
+          <!-- Brand Name -->
+          <span class="font-askan text-white text-base sm:text-xl tracking-wide">Aurai</span>
+
+          <!-- Hamburger (Mobile) -->
+          <button
+            id="menu-btn"
+            onclick="toggleMenu()"
+            class="ml-4 sm:ml-32 md:ml-64 lg:ml-96 text-white p-1 rounded-lg hover:bg-white/10 transition-colors"
+            aria-label="Toggle menu"
+          >
+            <!-- Hamburger Icon -->
+            <svg id="icon-menu" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+            <!-- Close Icon (hidden by default) -->
+            <svg id="icon-close" class="w-5 h-5 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Right: Join Button (Desktop only) -->
+        <button
+          onclick="handleJoin()"
+          class="hidden sm:block bg-white text-gray-900 font-medium text-sm px-6 py-3 rounded-full hover:bg-white/90 active:scale-95 transition-all"
+        >
+          Join the list
+        </button>
+      </nav>
+
+      <!-- ── Mobile Menu Dropdown ───────────────────────────── -->
+      <div
+        id="mobile-menu"
+        class="sm:hidden hidden absolute top-[4.5rem] left-4 right-4 z-50 bg-black/30 backdrop-blur-xl rounded-2xl p-5 border border-white/10"
+      >
+        <div class="flex flex-col gap-1 mb-4">
+          <a href="#" class="text-white font-medium text-sm px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors">Story</a>
+          <a href="#" class="text-white font-medium text-sm px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors">Benefits</a>
+          <a href="#" class="text-white font-medium text-sm px-3 py-2.5 rounded-xl hover:bg-white/10 transition-colors">Connect</a>
+        </div>
+        <button
+          onclick="handleJoin()"
+          class="w-full bg-white text-gray-900 font-medium text-sm px-6 py-3 rounded-full hover:bg-white/90 transition-colors"
+        >
+          Join the list
+        </button>
+      </div>
+
+      <!-- ── Mobile Spacer ─────────────────────────────────── -->
+      <div class="flex-1 sm:hidden"></div>
+
+      <!-- ── Main Content (Bottom-aligned) ──────────────────── -->
+      <div class="flex flex-col sm:flex-1 sm:flex-row sm:items-end pb-4 sm:pb-12 lg:pb-16 sm:mt-auto">
+
+        <!-- Left Column -->
+        <div class="flex-1 flex flex-col gap-4 sm:gap-5">
+
+          <!-- Heading -->
+          <h1 class="font-askan text-white text-[2rem] sm:text-[3.5rem] md:text-[4.5rem] lg:text-[5.5rem] leading-[1.05] tracking-tight max-w-[700px]">
+            Your calm is always within.
+          </h1>
+
+          <!-- Subtitle -->
+          <p class="text-white/70 text-xs sm:text-base md:text-lg max-w-[520px] leading-relaxed font-light">
+            Aurai is your always-on wellness companion. Built by leading therapists, it brings you the care and clarity right when you need it.
+          </p>
+
+          <!-- Email Form -->
+          <form
+            onsubmit="handleEmailSubmit(event)"
+            class="relative flex items-center bg-black/30 backdrop-blur-md rounded-full border border-white/10 w-full max-w-[480px]"
+          >
+            <input
+              id="email-input"
+              type="email"
+              placeholder="Your email address"
+              required
+              class="flex-1 bg-transparent text-white placeholder-white/40 text-sm px-4 sm:px-6 py-3 sm:py-4 outline-none rounded-full font-inter"
+            />
+            <button
+              type="submit"
+              class="absolute right-1.5 bg-white text-gray-900 text-xs sm:text-sm font-medium px-3 sm:px-6 py-2 sm:py-3 rounded-full hover:bg-white/90 active:scale-95 transition-all whitespace-nowrap"
+            >
+              Join the list
+            </button>
+          </form>
+
+          <!-- Feature Pills (Mobile only) -->
+          <div class="flex sm:hidden flex-wrap gap-2 mt-2">
+            <span class="bg-black/30 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full border border-white/10">Smart Therapy</span>
+            <span class="bg-black/30 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full border border-white/10">Real-time Healing</span>
+            <span class="bg-black/30 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full border border-white/10">Insights into outcomes</span>
+          </div>
+
+        </div>
+
+        <!-- Right Column: Feature Pills (Desktop only) -->
+        <div class="hidden sm:flex flex-col items-end gap-2 self-end">
+          <span class="bg-black/30 backdrop-blur-md text-white text-xs sm:text-sm px-4 py-2 rounded-full border border-white/10">Smart Therapy</span>
+          <span class="bg-black/30 backdrop-blur-md text-white text-xs sm:text-sm px-4 py-2 rounded-full border border-white/10">Real-time Healing</span>
+          <span class="bg-black/30 backdrop-blur-md text-white text-xs sm:text-sm px-4 py-2 rounded-full border border-white/10">Insights into outcomes</span>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Scripts ───────────────────────────────────────────── -->
+  <script>
+    // Responsive video focal point
+    function updateVideoFocalPoint() {
+      const video = document.getElementById('hero-video');
+      if (!video) return;
+      const w = window.innerWidth;
+      if (w < 768) {
+        video.style.objectPosition = '80% center';
+      } else if (w < 1024) {
+        video.style.objectPosition = 'right center';
+      } else {
+        video.style.objectPosition = 'center center';
+      }
+    }
+    updateVideoFocalPoint();
+    window.addEventListener('resize', updateVideoFocalPoint);
+
+    // Mobile menu toggle
+    let menuOpen = false;
+    function toggleMenu() {
+      menuOpen = !menuOpen;
+      const menu = document.getElementById('mobile-menu');
+      const iconMenu = document.getElementById('icon-menu');
+      const iconClose = document.getElementById('icon-close');
+
+      if (menuOpen) {
+        menu.classList.remove('hidden');
+        iconMenu.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+      } else {
+        menu.classList.add('hidden');
+        iconMenu.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+      }
+    }
+
+    // Email form submit
+    function handleEmailSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('email-input').value;
+      if (email) {
+        alert(`Thank you! We'll be in touch at ${email}`);
+        document.getElementById('email-input').value = '';
+      }
+    }
+
+    // Join button (header)
+    function handleJoin() {
+      const emailInput = document.getElementById('email-input');
+      if (emailInput) {
+        emailInput.scrollIntoView({ behavior: 'smooth' });
+        setTimeout(() => emailInput.focus(), 400);
+      }
+    }
+
+    // Close mobile menu when clicking outside
+    document.addEventListener('click', function(e) {
+      if (menuOpen && !document.getElementById('menu-btn').contains(e.target) &&
+          !document.getElementById('mobile-menu').contains(e.target)) {
+        toggleMenu();
+      }
+    });
+  </script>
+</body>
+</html>

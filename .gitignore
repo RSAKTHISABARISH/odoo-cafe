@@ -1,0 +1,46 @@
+# Node dependencies
+node_modules/
+
+# Production build outputs
+dist/
+build/
+out/
+
+# Environment files containing credentials
+.env
+.env.local
+.env.*.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs/Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary files and backup/helper scripts
+*.cjs
+.node/
+cafe_odoo.db
+backend/cafe_odoo.db
