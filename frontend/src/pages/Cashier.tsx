@@ -125,6 +125,7 @@ export default function Cashier() {
         method: payMethod,
         status: 'completed',
         createdAt: new Date().toISOString(),
+        paidAt: new Date().toISOString(),
         reference: `${payMethod.toUpperCase()}-${paymentId.slice(-6)}`,
       });
 
