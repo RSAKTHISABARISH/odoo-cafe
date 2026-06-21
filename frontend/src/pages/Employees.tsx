@@ -11,10 +11,11 @@ import {
 import type { Employee, EmployeeRole } from '../types';
 
 const ROLE_CONFIG: Record<EmployeeRole, { label: string; badge: string; dot: string }> = {
-  admin:   { label: 'Admin',   badge: 'bg-purple-900/30 text-purple-400 border-purple-700/50', dot: 'bg-purple-400' },
-  manager: { label: 'Manager', badge: 'bg-blue-900/30 text-blue-400 border-blue-700/50',       dot: 'bg-blue-400' },
-  waiter:  { label: 'Waiter',  badge: 'bg-emerald-900/30 text-accent-600 border-emerald-700/50', dot: 'bg-accent-600' },
-  kitchen: { label: 'Kitchen', badge: 'bg-orange-900/30 text-orange-400 border-orange-700/50', dot: 'bg-orange-400' },
+  admin: { label: 'Admin', badge: 'bg-primary-900/30 text-primary-400 border-primary-500/30', dot: 'bg-primary-400' },
+  manager: { label: 'Manager', badge: 'bg-purple-900/30 text-purple-400 border-purple-500/30', dot: 'bg-purple-400' },
+  waiter: { label: 'Waiter', badge: 'bg-emerald-900/30 text-emerald-400 border-emerald-500/30', dot: 'bg-emerald-400' },
+  kitchen: { label: 'Kitchen', badge: 'bg-amber-900/30 text-amber-400 border-amber-500/30', dot: 'bg-amber-400' },
+  cashier: { label: 'Cashier', badge: 'bg-blue-900/30 text-blue-400 border-blue-500/30', dot: 'bg-blue-400' },
 };
 
 const AVATARS = ['👨‍💼', '👩‍💼', '👨‍🍳', '👩‍🍳', '🧑‍💼', '👨‍💻', '👩‍💻', '🧑‍🍳'];

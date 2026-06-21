@@ -173,7 +173,7 @@ export default function Coupons() {
                 </div>
                 <div>
                   <label className="text-xs text-surface-500 font-semibold mb-1 block flex items-center gap-1">
-                    Auto-Assign Threshold (₹) <AlertCircle className="w-3 h-3 text-primary-600" title="Automatically award this coupon to customers when their order exceeds this amount" />
+                    Auto-Assign Threshold (₹) <span title="Automatically award this coupon to customers when their order exceeds this amount"><AlertCircle className="w-3 h-3 text-primary-600" /></span>
                   </label>
                   <input name="autoAssignThreshold" type="number" defaultValue={selected?.autoAssignThreshold} placeholder="Leave blank to disable" className="w-full px-3 py-2.5 bg-surface-50 border border-primary-500/30 rounded-xl text-surface-900 focus:border-primary-500 placeholder-gray-600" />
                 </div>

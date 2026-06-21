@@ -54,7 +54,7 @@ export interface Customer {
   lastVisit?: string;
 }
 
-export type EmployeeRole = 'admin' | 'manager' | 'waiter' | 'kitchen';
+export type EmployeeRole = 'admin' | 'manager' | 'waiter' | 'kitchen' | 'cashier';
 
 export interface Employee {
   id: string;
@@ -115,7 +115,9 @@ export interface Payment {
   method: PaymentMethod;
   amount: number;
   paidAt: string;
+  createdAt?: string;
   reference?: string;
+  status?: 'pending' | 'completed' | 'failed';
 }
 
 export type KDSStatus = 'queued' | 'preparing' | 'ready' | 'served';
@@ -153,6 +155,7 @@ export interface Coupon {
   usageCount: number;
   usageLimit: number;
   description: string;
+  autoAssignThreshold?: number;
 }
 
 export interface AuditLog {

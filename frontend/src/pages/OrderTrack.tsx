@@ -138,7 +138,7 @@ export default function OrderTrack() {
             </div>
 
             {/* Progress Steps */}
-            {found.status !== 'paid' && found.status !== 'cancelled' && (
+            {found.status !== 'paid' && (
               <div className="p-6 border-b border-surface-100">
                 <h4 className="text-sm font-bold uppercase tracking-widest text-surface-500 mb-6">Order Progress</h4>
                 <div className="relative">
