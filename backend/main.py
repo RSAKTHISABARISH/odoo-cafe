@@ -13,6 +13,10 @@ from datetime import datetime
 from dotenv import load_dotenv
 import razorpay
 
+# Load .env file (check root folder first, then fall back to local)
+root_env_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env")
+if os.path.exists(root_env_path):
+    load_dotenv(dotenv_path=root_env_path)
 load_dotenv()
 
 razorpay_client = razorpay.Client(
