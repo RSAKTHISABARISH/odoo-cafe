@@ -646,6 +646,15 @@ export default function Cashier() {
                         <p style={{ fontSize: 11, color: '#5B21B6', lineHeight: 1.5 }}>
                           Show the QR code or enter the customer's UPI ID to collect payment. Click confirm once payment is received.
                         </p>
+                        <div style={{ display: 'flex', justifyContent: 'center', marginTop: 10 }}>
+                          <div style={{ background: '#FFF', padding: 8, borderRadius: 8, border: '1px solid #C4B5FD' }}>
+                            <img 
+                              src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=upi://pay?pa=${settings.upiId || 'cafe@upi'}&pn=${encodeURIComponent(settings.upiName || 'Velora Cafe')}&am=${grandTotal}&cu=INR`}
+                              alt="UPI QR" 
+                              style={{ width: 120, height: 120, objectFit: 'contain' }}
+                            />
+                          </div>
+                        </div>
                       </div>
                       <div style={{ marginTop: 8 }}>
                         <label style={{ fontSize: 11, fontWeight: 700, color: COLORS.textLt, letterSpacing: '0.1em', textTransform: 'uppercase' }}>UPI Transaction ID (optional)</label>

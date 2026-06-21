@@ -53,6 +53,8 @@ export const useSettingsStore = create<SettingsStore>()(
         taxRate: 5,
         theme: 'dark',
         language: 'en',
+        upiId: 'cafe@upi',
+        upiName: 'Velora Café',
       },
       updateSettings: (s) => set({ settings: { ...get().settings, ...s } }),
       toggleTheme: () => {

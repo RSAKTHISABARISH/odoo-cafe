@@ -191,6 +191,8 @@ export interface AppSettings {
   taxRate: number;
   theme: 'light' | 'dark';
   language: string;
+  upiId?: string;
+  upiName?: string;
 }
 
 export interface AuthState {

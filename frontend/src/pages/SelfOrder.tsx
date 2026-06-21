@@ -5,6 +5,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTableStore, useOrderStore, useSettingsStore, useKDSStore } from '../store';
 import { api } from '../utils/api';
+import QRScannerModal from '../components/QRScannerModal';
 import {
   ShoppingBag, Plus, Minus, X, CheckCircle,
   Search, ChevronRight, Star, Flame, Receipt, Clock, ArrowLeft
@@ -167,6 +168,27 @@ export default function SelfOrder() {
   const [isPlacing, setIsPlacing]           = useState(false);
   const [scrolled, setScrolled]             = useState(false);
   const [paymentMethod, setPaymentMethod]   = useState<'cash'|'upi'|'card'>('cash');
+  const [isScannerOpen, setIsScannerOpen]   = useState(false);
+
+  const handleScanSuccess = (decodedText: string) => {
+    setIsScannerOpen(false);
+    console.log("Scanned text:", decodedText);
+    
+    if (decodedText.startsWith('upi://')) {
+      window.location.href = decodedText;
+    } else if (decodedText.includes('@')) {
+      const upiUrl = `upi://pay?pa=${decodedText}&pn=${encodeURIComponent(settings.upiName || 'Velora Cafe')}&am=${Math.round(grandTotal)}&cu=INR`;
+      window.location.href = upiUrl;
+    } else {
+      const cleaned = decodedText.trim();
+      if (cleaned && !cleaned.includes(' ')) {
+        const upiUrl = `upi://pay?pa=${cleaned}&pn=${encodeURIComponent(settings.upiName || 'Velora Cafe')}&am=${Math.round(grandTotal)}&cu=INR`;
+        window.location.href = upiUrl;
+      } else {
+        alert("Scanned code does not appear to be a valid UPI QR code. Found: " + decodedText);
+      }
+    }
+  };
 
   const table = tables.find(t => t.id === tableId);
   const effectiveTable = table || tables[0];
@@ -249,6 +271,14 @@ export default function SelfOrder() {
       // ── Cash: place order directly ──
       if (paymentMethod === 'cash') {
         await finalizeOrder();
+        setIsPlacing(false);
+        return;
+      }
+
+      // ── Mobile UPI Check: skip Razorpay and finalize directly ──
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+      if (paymentMethod === 'upi' && isMobile) {
+        await finalizeOrder('direct_upi');
         setIsPlacing(false);
         return;
       }
@@ -378,13 +408,37 @@ export default function SelfOrder() {
                 <p style={{ color: '#8B5CF6', fontSize: 12, letterSpacing: '0.12em', textTransform: 'uppercase', fontWeight: 800, marginBottom: 16 }}>📱 Scan to Pay with UPI</p>
                 <div style={{ display: 'flex', justifyContent: 'center' }}>
                   <div style={{ background: '#FFF', padding: 12, borderRadius: 12, border: `2px solid #8B5CF6` }}>
-                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=cafe@upi&pn=CafePos&am=${Math.round(grandTotal)}`}
+                    <img src={`https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=upi://pay?pa=${settings.upiId || 'cafe@upi'}&pn=${encodeURIComponent(settings.upiName || 'Velora Cafe')}&am=${Math.round(grandTotal)}&cu=INR`}
                       alt="UPI Payment QR" style={{ width: 160, height: 160 }} />
                   </div>
                 </div>
                 <p style={{ color: LIGHT_TEXT, fontSize: 12, marginTop: 12, fontWeight: 600 }}>
                   Amount: {settings.currencySymbol}{Math.round(grandTotal)}
                 </p>
+                {/* Direct payment link button for mobile users */}
+                {(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768) && (
+                  <div style={{ marginTop: 16 }}>
+                    <a
+                      href={`upi://pay?pa=${settings.upiId || 'cafe@upi'}&pn=${encodeURIComponent(settings.upiName || 'Velora Cafe')}&am=${Math.round(grandTotal)}&cu=INR`}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        padding: '10px 14px',
+                        borderRadius: 10,
+                        background: '#7C3AED',
+                        color: '#FFF',
+                        fontWeight: 700,
+                        fontSize: 12,
+                        textDecoration: 'none',
+                        boxShadow: '0 4px 10px rgba(124, 58, 237, 0.2)'
+                      }}
+                    >
+                      🚀 Launch UPI App to Pay
+                    </a>
+                  </div>
+                )}
               </>
             ) : (
               <>
@@ -855,6 +909,64 @@ export default function SelfOrder() {
                 </div>
               </div>
 
+              {paymentMethod === 'upi' && (
+                <div style={{
+                  background: '#F5F3FF',
+                  border: '1.5px solid #C4B5FD',
+                  borderRadius: 12,
+                  padding: 12,
+                  marginBottom: 12,
+                  textAlign: 'center',
+                }}>
+                  <p style={{ fontSize: 12, fontWeight: 700, color: '#4C1D95', marginBottom: 2 }}>📱 Mobile UPI Payment</p>
+                  <p style={{ fontSize: 10, color: '#6B21A8', marginBottom: 10, lineHeight: 1.3 }}>
+                    Choose a direct UPI option below for your mobile device.
+                  </p>
+                  
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                    <a
+                      href={`upi://pay?pa=${settings.upiId || 'cafe@upi'}&pn=${encodeURIComponent(settings.upiName || 'Velora Cafe')}&am=${Math.round(grandTotal)}&cu=INR`}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        padding: '10px 12px',
+                        borderRadius: 8,
+                        background: '#7C3AED',
+                        color: '#FFF',
+                        fontWeight: 700,
+                        fontSize: 12,
+                        textDecoration: 'none',
+                        boxShadow: '0 3px 8px rgba(124, 58, 237, 0.2)'
+                      }}
+                    >
+                      🚀 Pay via UPI Apps (Instant)
+                    </a>
+
+                    <button
+                      onClick={() => setIsScannerOpen(true)}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        gap: 6,
+                        padding: '10px 12px',
+                        borderRadius: 8,
+                        background: '#FFF',
+                        border: '1.5px solid #7C3AED',
+                        color: '#7C3AED',
+                        fontWeight: 700,
+                        fontSize: 12,
+                        cursor: 'pointer'
+                      }}
+                    >
+                      📷 Share Camera to Scan QR
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <button onClick={placeOrder} disabled={isPlacing}
                 style={{
                   width: '100%', padding: '14px', borderRadius: 14, border: 'none', cursor: 'pointer',
@@ -981,6 +1093,66 @@ export default function SelfOrder() {
               </div>
             </div>
 
+            {paymentMethod === 'upi' && (
+              <div style={{
+                background: '#F5F3FF',
+                border: '1.5px solid #C4B5FD',
+                borderRadius: 14,
+                padding: 14,
+                marginBottom: 16,
+                textAlign: 'center',
+              }}>
+                <p style={{ fontSize: 13, fontWeight: 700, color: '#4C1D95', marginBottom: 4 }}>📱 Mobile UPI Payment</p>
+                <p style={{ fontSize: 11, color: '#6B21A8', marginBottom: 12, lineHeight: 1.4 }}>
+                  Choose a direct UPI option below for your mobile device.
+                </p>
+                
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <a
+                    href={`upi://pay?pa=${settings.upiId || 'cafe@upi'}&pn=${encodeURIComponent(settings.upiName || 'Velora Cafe')}&am=${Math.round(grandTotal)}&cu=INR`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      padding: '12px 16px',
+                      borderRadius: 10,
+                      background: '#7C3AED',
+                      color: '#FFF',
+                      fontWeight: 700,
+                      fontSize: 13,
+                      textDecoration: 'none',
+                      boxShadow: '0 4px 12px rgba(124, 58, 237, 0.25)',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    🚀 Pay via UPI Apps (Instant)
+                  </a>
+
+                  <button
+                    onClick={() => setIsScannerOpen(true)}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      gap: 8,
+                      padding: '12px 16px',
+                      borderRadius: 10,
+                      background: '#FFF',
+                      border: '1.5px solid #7C3AED',
+                      color: '#7C3AED',
+                      fontWeight: 700,
+                      fontSize: 13,
+                      cursor: 'pointer',
+                      transition: 'all 0.2s'
+                    }}
+                  >
+                    📷 Share Camera to Scan QR
+                  </button>
+                </div>
+              </div>
+            )}
+
             <button onClick={placeOrder} disabled={isPlacing}
               style={{
                 width: '100%', padding: '16px', borderRadius: 16, border: 'none', cursor: 'pointer',
@@ -993,6 +1165,12 @@ export default function SelfOrder() {
           </div>
         </div>
       )}
+      {/* QR Scanner Modal */}
+      <QRScannerModal
+        isOpen={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScanSuccess={handleScanSuccess}
+      />
     </div>
   );
 }

@@ -403,7 +403,7 @@ export default function POS() {
                 <div className="text-center animate-fade-in">
                   <div className="bg-white p-2 rounded-xl inline-block mx-auto mb-2 border border-surface-300">
                     <img 
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=upi://pay?pa=cafe@upi&pn=CafePos&am=${total.toFixed(0)}`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=upi://pay?pa=${settings.upiId || 'cafe@upi'}&pn=${encodeURIComponent(settings.upiName || 'Velora Cafe')}&am=${total.toFixed(0)}&cu=INR`}
                       alt="UPI QR" 
                       className="w-24 h-24 object-contain"
                     />

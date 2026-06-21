@@ -115,6 +115,33 @@ export default function Settings() {
                   />
                 </div>
               </div>
+
+              <div className="mt-6 pt-6 border-t border-surface-200 dark:border-surface-700">
+                <h3 className="text-lg font-bold font-display text-surface-900 mb-2">UPI Payment Details</h3>
+                <p className="text-surface-500 text-sm mb-4">Configure the default UPI details for payments and dynamic QR codes.</p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-surface-700 dark:text-surface-300 mb-1">UPI ID (VPA)</label>
+                    <input
+                      type="text"
+                      className="input"
+                      placeholder="e.g. cafe@upi"
+                      value={formData.upiId || ''}
+                      onChange={(e) => setFormData({ ...formData, upiId: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-surface-700 dark:text-surface-300 mb-1">Payee Name</label>
+                    <input
+                      type="text"
+                      className="input"
+                      placeholder="e.g. Velora Café"
+                      value={formData.upiName || ''}
+                      onChange={(e) => setFormData({ ...formData, upiName: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
